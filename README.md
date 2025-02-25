@@ -1,0 +1,134 @@
+# Teslo Shop - E-Commerce Platform
+
+Welcome to the **Teslo Shop e-commerce platform**! This is a modern, high-performance, and scalable e-commerce solution built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Zustand**, **Prisma**, **PostgreSQL**, and **Docker**. Whether you're building a small online store or a large-scale e-commerce platform, this project provides a solid foundation to get you started quickly.
+
+## Table of Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+
+## Features
+
+- **Next.js**: Server-side rendering (SSR), static site generation (SSG), and API routes for a fast and SEO-friendly e-commerce experience.
+- **TypeScript**: Strongly-typed codebase for better developer experience and fewer runtime errors.
+- **Tailwind CSS**: Utility-first CSS framework for building responsive and visually stunning UIs with ease.
+- **Zustand**: Lightweight and efficient global state management for seamless data flow across the application.
+- **Modern Design**: A clean, professional, and user-friendly design.
+- **Responsive Layout**: Fully responsive design that works seamlessly across all devices.
+- **Product Management**: Easily manage products, categories, and inventory.
+- **Shopping Cart**: Intuitive shopping cart with real-time updates.
+- **Checkout Flow**: Streamlined and secure checkout process.
+- **Authentication**: User authentication and account management.
+- **SEO Optimized**: Built-in SEO best practices for better search engine visibility.
+
+## Requirements
+
+You need to have the following installed:
+
+A source code editor such as [VSCode](https://code.visualstudio.com/), [Sublime Text](https://www.sublimetext.com/), or any other editor of your choice.
+
+[![NodeJS](https://img.shields.io/badge/Node.js-6DA55F.svg?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/en)
+[![npm](https://img.shields.io/badge/npm-%23CB3837.svg?style=flat&logo=npm&logoColor=white)](https://www.npmjs.com/)
+
+> [!NOTE]
+> Clicking on the Node.js badge will take you to the Node.js website, where you can download the installer. It is recommended to use the stable version. When you install Node.js, npm will be installed automatically.
+
+Check your Node.js and npm installation by running:
+
+```bash
+node --version
+npm --version
+```
+
+## Tech Stack
+
+This project utilizes the following technologies:
+
+<p>
+  <a href="#"><img src="https://skillicons.dev/icons?i=next" width="40" height="40" alt="Next.js" /></a>
+  <a href="#"><img src="https://skillicons.dev/icons?i=ts" width="40" height="40" alt="TypeScript" /></a>
+  <a href="#"><img src="https://skillicons.dev/icons?i=tailwind" width="40" height="40" alt="Tailwind CSS" /></a>
+  <a href="#"><img src="https://skillicons.dev/icons?i=docker" width="40" height="40" alt="Docker" /></a>
+  <a href="#"><img src="https://skillicons.dev/icons?i=prisma" width="40" height="40" alt="Prisma" /></a>
+  <a href="#"><img src="https://skillicons.dev/icons?i=postgres" width="40" height="40" alt="PostgreSQL" /></a>
+</p>
+
+**Note**: Zustand is used for global state management in this project.
+
+## Project Structure
+
+> [!NOTE]
+> The project structure is currently under development. Once finalized, a detailed directory tree will be provided here. Check back soon for updates!
+
+## Getting Started
+
+To set up the project locally, follow these steps:
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/daniel-pompa/next-teslo-shop.git
+```
+
+2. **Navigate to the project directory:**
+
+```bash
+cd next-teslo-shop
+```
+
+3. **Install dependencies:**
+
+```bash
+npm install
+```
+
+4. Create an `.env` file in the root of the project and set the necessary environment variables. You can use the `.env.template` file as a reference.
+
+5. **Run the development server:**
+
+```bash
+npm run dev
+```
+
+> [!NOTE]
+> The server will typically run on <http://localhost:3000>, but check the output on your terminal to be sure.
+
+Now, you're all set to explore the system!
+
+## Contributing
+
+We welcome contributions from the community! To contribute, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes.
+4. Commit your changes (`git commit -am 'add new feature'`).
+5. Push to the branch (`git push origin feature-branch`).
+6. Create a new Pull Request.
+
+Before submitting a pull request, please ensure your code follows the project's coding standards and includes tests where appropriate.
+
+## License
+
+This project is licensed under the MIT License.
+
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://choosealicense.com/licenses/mit/)
+
+> [!NOTE]
+> Clicking on the MIT License badge to see the LICENSE file for details.
+
+## Author
+
+This project is maintained and developed by **Daniel Pompa Pareja**.
+
+For any questions or suggestions, feel free to reach out via [email](mailto:daniel.40.pompa@gmail.com).
+
+🌟 Happy Coding! 🌟
+
+[Back to Top](#table-of-contents)
