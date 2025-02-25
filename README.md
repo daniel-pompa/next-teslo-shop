@@ -82,15 +82,29 @@ git clone https://github.com/daniel-pompa/next-teslo-shop.git
 cd next-teslo-shop
 ```
 
-3. **Install dependencies:**
+3. **Set up environment variables:**
+
+Rename the provided `.env.template` file to `.env` and configure the necessary environment variables. Update the placeholder values with the appropriate configuration for your local environment, including your database credentials (`DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+
+> [!NOTE]
+> Ensure your `.env` file is secure and never committed to version control. It is already included in the `.gitignore` file to prevent accidental exposure of sensitive information.
+
+4. **Install dependencies:**
 
 ```bash
 npm install
 ```
 
-4. Create an `.env` file in the root of the project and set the necessary environment variables. You can use the `.env.template` file as a reference.
+5. **Set up the database using Docker:**
 
-5. **Run the development server:**
+```bash
+docker compose up -d
+```
+
+> [!NOTE]
+> This command will start the PostgreSQL database. Make sure the environment variables in `.env` match the configuration in `docker-compose.yml`.
+
+6. **Run the development server:**
 
 ```bash
 npm run dev
