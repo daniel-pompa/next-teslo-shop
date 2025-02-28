@@ -26,10 +26,12 @@ type Color =
   | '#1d4ed8';
 
 interface SeedData {
+  categories: string[];
   products: SeedProduct[];
 }
 
 export const initialData: SeedData = {
+  categories: ['Shirts', 'Pants', 'Hoodies', 'Hats'],
   products: [
     {
       description:
