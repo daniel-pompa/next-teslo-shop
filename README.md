@@ -104,7 +104,19 @@ docker compose up -d
 > [!NOTE]
 > This command will start the PostgreSQL database. Make sure the environment variables in `.env` match the configuration in `docker-compose.yml`.
 
-6. **Run the development server:**
+6. **Prisma Migrate:**
+
+```bash
+npx prisma migrate dev
+```
+
+7. **Execute the seed script:**
+
+```bash
+npm run seed
+```
+
+8. **Run the development server:**
 
 ```bash
 npm run dev
