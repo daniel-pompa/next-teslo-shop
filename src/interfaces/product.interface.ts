@@ -1,5 +1,5 @@
 export interface Product {
-  // TODO: Add an id property to the interface - id: string;
+  id: string;
   description: string;
   images: string[];
   inStock: number;
