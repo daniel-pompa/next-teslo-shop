@@ -28,19 +28,19 @@ export const TopMenu = () => {
           {/* Center menu links */}
           <div className='hidden sm:flex space-x-4'>
             <Link
-              href='/category/men'
+              href='/gender/men'
               className='px-4 py-2 hover:bg-slate-50 rounded-md transition-all duration-300'
             >
               Men
             </Link>
             <Link
-              href='/category/women'
+              href='/gender/women'
               className='px-4 py-2 hover:bg-slate-50 rounded-md transition-all duration-300'
             >
               Women
             </Link>
             <Link
-              href='/category/kid'
+              href='/gender/kid'
               className='px-4 py-2 hover:bg-slate-50 rounded-md transition-all duration-300'
             >
               Kids
