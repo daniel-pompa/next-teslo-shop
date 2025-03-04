@@ -1,22 +1,49 @@
+export const revalidate = 604800; // 7 days
+
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getProductBySlug } from '@/actions';
 import {
   ColorSelector,
   ProductMobileSlideshow,
   ProductSlideshow,
   QuantitySelector,
   SizeSelector,
+  StockLabel,
 } from '@/components';
-import { initialData } from '@/data/seed';
 import { formatCurrency } from '@/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // Read route params
+  const { slug } = await params;
+
+  // Fetch data
+  const product = await getProductBySlug(slug);
+  // Optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: product?.title || 'Product not found',
+    description: product?.description || '',
+    openGraph: {
+      title: product?.title || 'Product not found',
+      description: product?.description || '',
+      images: [`/products/${product?.images[1]}`, ...previousImages],
+    },
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
 
-  const product = initialData.products.find(product => product.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) notFound();
 
@@ -42,7 +69,8 @@ export default async function ProductPage({ params }: Props) {
       {/* Details */}
       <div className='col-span-1 p-5 space-y-5 h-fit border rounded-md shadow-md'>
         <h1 className='font-bold'>{product.title}</h1>
-        <p className='text-xl md:text-2xl font-extrabold'>{formattedPrice}</p>
+        <h2 className='font-bold'>{formattedPrice}</h2>
+        <StockLabel slug={product.slug} />
         {/* Color selector */}
         <h3 className='font-bold'>Select a color</h3>
         <ColorSelector
@@ -56,7 +84,14 @@ export default async function ProductPage({ params }: Props) {
         <h3 className='font-bold'>Select quantity</h3>
         <QuantitySelector quantity={1} />
         {/* Add to cart button */}
-        <button className='btn-primary mt-5 w-full'>Add to cart</button>
+        <button
+          className={`btn-primary mt-5 w-full ${
+            product.inStock === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={product.inStock === 0}
+        >
+          Add to cart
+        </button>
         {/* Description */}
         <h3 className='font-bold'>Description</h3>
         <p className='font-light'>{product.description}</p>

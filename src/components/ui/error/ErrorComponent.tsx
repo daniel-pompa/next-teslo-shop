@@ -8,7 +8,7 @@ interface Props {
 export const ErrorComponent = ({ error, reset }: Props) => {
   return (
     <>
-      <div className='max-w-[500px] w-full m-auto text-center p-8 rounded-md shadow-md border mt-48'>
+      <div className='max-w-[500px] w-full m-auto text-center p-8 rounded-md shadow-md border mt-36'>
         {/* Error icon */}
         <div className='flex justify-center mb-6'>
           <FaExclamationTriangle className='w-20 h-20 text-red-500' />
