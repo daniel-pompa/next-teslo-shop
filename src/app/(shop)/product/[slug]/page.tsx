@@ -3,14 +3,8 @@ export const revalidate = 604800; // 7 days
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProductBySlug } from '@/actions';
-import {
-  ColorSelector,
-  ProductMobileSlideshow,
-  ProductSlideshow,
-  QuantitySelector,
-  SizeSelector,
-  StockLabel,
-} from '@/components';
+import { AddToCart } from './ui/AddToCart';
+import { ProductMobileSlideshow, ProductSlideshow, StockLabel } from '@/components';
 import { formatCurrency } from '@/utils';
 
 interface Props {
@@ -30,6 +24,7 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
+    metadataBase: new URL('http://localhost:3000'),
     title: product?.title || 'Product not found',
     description: product?.description || '',
     openGraph: {
@@ -71,27 +66,7 @@ export default async function ProductPage({ params }: Props) {
         <h1 className='font-bold'>{product.title}</h1>
         <h2 className='font-bold'>{formattedPrice}</h2>
         <StockLabel slug={product.slug} />
-        {/* Color selector */}
-        <h3 className='font-bold'>Select a color</h3>
-        <ColorSelector
-          selectedColor={product.colors[0]}
-          availableColors={product.colors}
-        />
-        {/* Size selector */}
-        <h3 className='font-bold'>Select a size</h3>
-        <SizeSelector selectedSize={product.sizes[0]} availableSizes={product.sizes} />
-        {/* Quantity selector */}
-        <h3 className='font-bold'>Select quantity</h3>
-        <QuantitySelector quantity={1} />
-        {/* Add to cart button */}
-        <button
-          className={`btn-primary mt-5 w-full ${
-            product.inStock === 0 ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={product.inStock === 0}
-        >
-          Add to cart
-        </button>
+        <AddToCart product={product} />
         {/* Description */}
         <h3 className='font-bold'>Description</h3>
         <p className='font-light'>{product.description}</p>
