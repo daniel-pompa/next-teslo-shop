@@ -1,28 +1,20 @@
 'use client';
-import { useState } from 'react';
 import clsx from 'clsx';
 import type { Size } from '@/interfaces';
 
 interface Props {
   selectedSize?: Size;
   availableSizes: Size[];
+  onSizeChanged: (size: Size) => void;
 }
 
-export const SizeSelector = ({ selectedSize: initialSize, availableSizes }: Props) => {
-  const [selectedSize, setSelectedSize] = useState<Size>(
-    initialSize || availableSizes[0]
-  );
-
-  const handleSizeClick = (size: Size) => {
-    setSelectedSize(size);
-  };
-
+export const SizeSelector = ({ selectedSize, availableSizes, onSizeChanged }: Props) => {
   return (
     <div className='flex flex-wrap gap-2'>
       {availableSizes.map(size => (
         <button
           key={size}
-          onClick={() => handleSizeClick(size)}
+          onClick={() => onSizeChanged(size)}
           className={clsx(
             'flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-200',
             {

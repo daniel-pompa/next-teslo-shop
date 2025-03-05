@@ -1,18 +1,16 @@
 'use client';
-import { useState } from 'react';
 import { IoAddCircleOutline, IoRemoveCircleOutline } from 'react-icons/io5';
 
 interface Props {
   quantity: number;
+  onQuantityChange: (quantity: number) => void;
 }
 
-export const QuantitySelector = ({ quantity }: Props) => {
-  const [count, setCount] = useState(quantity);
-
+export const QuantitySelector = ({ quantity, onQuantityChange }: Props) => {
   const handleQuantityChange = (value: number) => {
-    const newCount = count + value;
-    if (newCount < 1 || newCount > 5) return; // Quantity limits
-    setCount(newCount);
+    const newQuantity = quantity + value;
+    if (newQuantity < 1 || newQuantity > 5) return; // Quantity limits
+    onQuantityChange(newQuantity);
   };
 
   return (
@@ -21,7 +19,7 @@ export const QuantitySelector = ({ quantity }: Props) => {
         <IoRemoveCircleOutline size={35} />
       </button>
       <span className='flex items-center justify-center w-8 h-8 border bg-slate-100 rounded-full text-center text-base'>
-        {count}
+        {quantity}
       </span>
       <button onClick={() => handleQuantityChange(1)} aria-label='Increase quantity'>
         <IoAddCircleOutline size={35} />

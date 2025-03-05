@@ -1,24 +1,23 @@
 'use client';
-import { useState } from 'react';
 import clsx from 'clsx';
 
 interface Props {
-  selectedColor: string;
+  selectedColor?: string;
   availableColors: string[];
+  onColorSelected: (color: string) => void;
 }
 
 export const ColorSelector = ({
-  selectedColor: initialColor,
+  selectedColor,
   availableColors,
+  onColorSelected,
 }: Props) => {
-  const [selectedColor, setSelectedColor] = useState<string>(initialColor);
-
   return (
     <div className='flex flex-wrap gap-2'>
       {availableColors.map(color => (
         <button
           key={color}
-          onClick={() => setSelectedColor(color)}
+          onClick={() => onColorSelected(color)}
           className={clsx(
             'w-10 h-10 rounded-full border-2 transition-all duration-200 flex items-center justify-center',
             {
