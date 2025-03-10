@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { Product, Size } from '@/interfaces';
+import { useCartStore } from '@/store';
+import type { CartProduct, Color, Product, Size } from '@/interfaces';
 import { ColorSelector, QuantitySelector, SizeSelector } from '@/components';
 
 interface Props {
@@ -8,20 +9,36 @@ interface Props {
 }
 
 export const AddToCart = ({ product }: Props) => {
-  const [color, setColor] = useState<string | undefined>();
-  const [size, setSize] = useState<Size | undefined>();
+  const addproductToCart = useCartStore(state => state.addProductToCart);
+
+  const [selectedColor, setSelectedColor] = useState<Color | undefined>();
+  const [selectedSize, setSelectedSize] = useState<Size | undefined>();
   const [quantity, setQuantity] = useState<number>(1);
   const [posted, setPosted] = useState(false);
 
   const handleAddToCart = () => {
     setPosted(true);
-    if (!color || !size) return;
-    console.log({ color, size, quantity });
+    if (!selectedColor || !selectedSize) return;
+    const cartProduct: CartProduct = {
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      price: product.price,
+      color: selectedColor,
+      size: selectedSize,
+      quantity: quantity,
+      image: product.images[0],
+    };
+    addproductToCart(cartProduct);
+    setPosted(false);
+    setSelectedColor(undefined);
+    setSelectedSize(undefined);
+    setQuantity(1);
   };
 
   return (
     <>
-      {posted && (!color || !size) && (
+      {posted && (!selectedColor || !selectedSize) && (
         <div className='bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded fade-in'>
           <p>You must select a color and a size</p>
         </div>
@@ -29,16 +46,16 @@ export const AddToCart = ({ product }: Props) => {
       {/* Color selector */}
       <h3 className='font-bold'>Select a color</h3>
       <ColorSelector
-        selectedColor={color}
+        selectedColor={selectedColor}
         availableColors={product.colors}
-        onColorSelected={setColor}
+        onColorSelected={setSelectedColor}
       />
       {/* Size selector */}
       <h3 className='font-bold'>Select a size</h3>
       <SizeSelector
-        selectedSize={size}
+        selectedSize={selectedSize}
         availableSizes={product.sizes}
-        onSizeChanged={setSize}
+        onSizeChanged={setSelectedSize}
       />
       {/* Quantity selector */}
       <h3 className='font-bold'>Select quantity</h3>
