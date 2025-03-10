@@ -2,10 +2,18 @@
 import Link from 'next/link';
 import { IoSearch, IoCart } from 'react-icons/io5';
 import { titleFont } from '@/config/fonts';
-import { useUIStore } from '@/store';
+import { useCartStore, useUIStore } from '@/store';
+import { useEffect, useState } from 'react';
 
 export const TopMenu = () => {
   const openSideMenu = useUIStore(state => state.openSideMenu);
+  const totalItemsInCart = useCartStore(state => state.getTotalItems());
+
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
   return (
     <header>
@@ -56,9 +64,14 @@ export const TopMenu = () => {
             </Link>
             <Link href='/cart'>
               <div className='relative'>
-                <span className='absolute -top-2 -right-2 bg-blue-600 w-4 h-4 text-xs text-white rounded-full flex items-center justify-center'>
-                  0
-                </span>
+                {
+                  // Show badge if there are items in the cart
+                  loaded && totalItemsInCart > 0 && (
+                    <span className='absolute -top-2 -right-2 bg-blue-600 w-4 h-4 text-xs text-white rounded-full flex items-center justify-center'>
+                      {totalItemsInCart}
+                    </span>
+                  )
+                }
                 <IoCart
                   size={24}
                   className='text-slate-700 hover:text-slate-900 transition-colors duration-300'
