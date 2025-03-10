@@ -1,10 +1,11 @@
 'use client';
+import { Color } from '@/interfaces';
 import clsx from 'clsx';
 
 interface Props {
-  selectedColor?: string;
-  availableColors: string[];
-  onColorSelected: (color: string) => void;
+  selectedColor?: Color;
+  availableColors: Color[];
+  onColorSelected: (color: Color) => void;
 }
 
 export const ColorSelector = ({
@@ -31,8 +32,8 @@ export const ColorSelector = ({
           {color === selectedColor && ( // Check icon for the selected color
             <svg
               className={clsx('w-5 h-5', {
-                'text-black': color === '#ffffff' || color === 'white', // Check black for white
-                'text-white': color !== '#ffffff' && color !== 'white', // Check white for other colors
+                'text-black': color === '#ffffff', // Check black for white
+                'text-white': color !== '#ffffff', // Check white for other colors
               })}
               fill='none'
               stroke='currentColor'
