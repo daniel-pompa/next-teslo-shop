@@ -1,11 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { QuantitySelector, Title } from '@/components';
-import { initialData } from '@/data/seed';
+import { Title } from '@/components';
 import { formatCurrency } from '@/utils';
-import { FaShoppingCart, FaTrash } from 'react-icons/fa';
-
-const productsInCart = [initialData.products[0], initialData.products[1]];
+import { FaShoppingCart } from 'react-icons/fa';
+import { ProductsInCart } from './ui/ProductsInCart';
 
 export default function CartPage() {
   return (
@@ -16,7 +13,7 @@ export default function CartPage() {
         {/* Continue shopping link */}
         <Link
           href='/'
-          className='btn-primary w-full sm:w-2/6 md:w-1/6 flex items-center justify-center mb-6'
+          className='btn-primary w-full sm:w-2/6 lg:w-1/6 flex items-center justify-center mb-6'
         >
           Continue shopping
         </Link>
@@ -26,39 +23,7 @@ export default function CartPage() {
         {/* Shopping cart */}
         <div className='lg:col-span-2'>
           {/* Items */}
-          {productsInCart.map(product => (
-            <div
-              key={product.slug}
-              className='flex flex-col sm:flex-row items-center gap-6 p-4 mb-4 border rounded-md hover:shadow-lg transition-shadow duration-300 ease-in-out relative'
-            >
-              {/* Remove button */}
-              <button className='absolute top-4 right-4 p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors duration-200'>
-                <FaTrash size={20} />
-              </button>
-              {/* Product image */}
-              <div className='flex-shrink-0'>
-                <Image
-                  src={`/products/${product.images[0]}`}
-                  alt={product.title}
-                  width={220}
-                  height={220}
-                  priority
-                  className='rounded-md w-44 h-44 object-cover'
-                />
-              </div>
-              {/* Product details */}
-              <div className='w-full flex-1 text-center sm:text-left'>
-                <h2 className='font-bold text-xl'>{product.title}</h2>
-                <p className='text-lg font-bold mt-2 text-slate-700'>
-                  {formatCurrency(product.price)}
-                </p>
-                {/* Quantity selector */}
-                <div className='mt-4'>
-                  <QuantitySelector quantity={1} />
-                </div>
-              </div>
-            </div>
-          ))}
+          <ProductsInCart />
         </div>
         {/* Checkout - Order summary */}
         <div className='bg-slate-50 p-6 rounded-lg shadow-md h-fit'>
@@ -68,7 +33,7 @@ export default function CartPage() {
           {/* Items in cart */}
           <div className='flex justify-between mb-4'>
             <p>Items</p>
-            <p className='font-semibold'>{productsInCart.length}</p>
+            <p className='font-semibold'>{3}</p>
           </div>
           {/* Subtotal */}
           <div className='flex justify-between mb-4'>

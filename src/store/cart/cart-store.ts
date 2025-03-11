@@ -7,6 +7,7 @@ interface State {
   cart: CartProduct[];
   getTotalItems: () => number;
   addProductToCart: (product: CartProduct) => void;
+  updateProductQuantity: (product: CartProduct, quantity: number) => void;
 }
 
 // Create the store with Zustand, DevTools, and Persist middleware
@@ -15,7 +16,6 @@ export const useCartStore = create<State>()(
     persist(
       (set, get) => ({
         cart: [], // Initial state: empty cart
-
         // Function to get the total number of items in the cart
         getTotalItems: () => {
           const { cart } = get(); // Get current cart state
@@ -24,7 +24,6 @@ export const useCartStore = create<State>()(
         // Function to add a product to the cart
         addProductToCart: (product: CartProduct) => {
           const { cart } = get();
-
           // Check if the product already exists in the cart with the same size and color
           const productInCart = cart.some(
             item =>
@@ -32,13 +31,11 @@ export const useCartStore = create<State>()(
               item.size === product.size &&
               item.color === product.color
           );
-
           // If the product is not in the cart, add it and exit the function
           if (!productInCart) {
             set({ cart: [...cart, product] }, false, 'addProductToCart'); // Update state
             return; // Exit to avoid unnecessary updates
           }
-
           // If the product is already in the cart, update its quantity
           const updatedCartProducts = cart.map(item => {
             if (
@@ -53,9 +50,22 @@ export const useCartStore = create<State>()(
             }
             return item; // Return unchanged items
           });
-
           // Update the cart with the new quantities
           set({ cart: updatedCartProducts }, false, 'updateProductQuantity');
+        },
+        // Function to update the quantity of a product in the cart
+        updateProductQuantity: (product: CartProduct, quantity: number) => {
+          const { cart } = get();
+          const updatedCartProducts = cart.map(item => {
+            if (item.id === product.id && item.size === product.size) {
+              return {
+                ...item,
+                quantity, // Update quantity
+              };
+            }
+            return item; // Return unchanged items
+          });
+          set({ cart: updatedCartProducts }, false, 'updateProductQuantity'); // Update state
         },
       }),
       {
