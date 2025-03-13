@@ -2,12 +2,21 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { CartProduct } from '@/interfaces';
 
+const TAX_RATE = 0.09; // Tax rate (9%)
+
 // Define the state structure
 interface State {
   cart: CartProduct[];
   getTotalItems: () => number;
+  getSummaryInformation: () => {
+    subTotal: number;
+    tax: number;
+    total: number;
+    itemsInCart: number;
+  };
   addProductToCart: (product: CartProduct) => void;
   updateProductQuantity: (product: CartProduct, quantity: number) => void;
+  removeProductFromCart: (product: CartProduct) => void;
 }
 
 // Create the store with Zustand, DevTools, and Persist middleware
@@ -20,6 +29,18 @@ export const useCartStore = create<State>()(
         getTotalItems: () => {
           const { cart } = get(); // Get current cart state
           return cart.reduce((total, item) => total + item.quantity, 0); // Calculate total items in the cart
+        },
+        // Function to get summary information (total items and total price) of the cart
+        getSummaryInformation: () => {
+          const { cart } = get();
+          const subTotal = cart.reduce(
+            (subTotal, product) => product.price * product.quantity + subTotal,
+            0
+          );
+          const tax = Math.round(subTotal * TAX_RATE * 100) / 100;
+          const total = subTotal + tax; // Total amount including tax
+          const itemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
+          return { subTotal, tax, total, itemsInCart };
         },
         // Function to add a product to the cart
         addProductToCart: (product: CartProduct) => {
@@ -66,6 +87,14 @@ export const useCartStore = create<State>()(
             return item; // Return unchanged items
           });
           set({ cart: updatedCartProducts }, false, 'updateProductQuantity'); // Update state
+        },
+        // Function to remove a product from the cart
+        removeProductFromCart: (product: CartProduct) => {
+          const { cart } = get();
+          const updatedCartProducts = cart.filter(
+            item => item.id !== product.id || item.size !== product.size
+          );
+          set({ cart: updatedCartProducts }, false, 'removeProductFromCart'); // Update state
         },
       }),
       {
