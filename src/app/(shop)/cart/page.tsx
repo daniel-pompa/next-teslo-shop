@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Title } from '@/components';
-import { formatCurrency } from '@/utils';
 import { FaShoppingCart } from 'react-icons/fa';
 import { ProductsInCart } from './ui/ProductsInCart';
+import { OrderSummary } from './ui/OrderSummary';
 
 export default function CartPage() {
   return (
@@ -30,31 +30,7 @@ export default function CartPage() {
           <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
             <FaShoppingCart /> Order summary
           </h2>
-          {/* Items in cart */}
-          <div className='flex justify-between mb-4'>
-            <p>Items</p>
-            <p className='font-semibold'>{3}</p>
-          </div>
-          {/* Subtotal */}
-          <div className='flex justify-between mb-4'>
-            <p>Subtotal</p>
-            <p className='font-semibold'>{formatCurrency(275)}</p>
-          </div>
-          {/* Sale Tax */}
-          <div className='flex justify-between mb-4'>
-            <p>Sale Tax (9%)</p>
-            <p className='font-semibold'>{formatCurrency(24.75)}</p>
-          </div>
-          {/* Shipping */}
-          <div className='flex justify-between mb-4'>
-            <p>Shipping</p>
-            <p className='font-semibold'>{formatCurrency(0)}</p>
-          </div>
-          {/* Total */}
-          <div className='flex justify-between border-t border-slate-300 pt-4 mb-6'>
-            <p className='text-lg font-bold'>Total</p>
-            <p className='text-xl font-bold text-slate-800'>{formatCurrency(299.75)}</p>
-          </div>
+          <OrderSummary />
           {/* Checkout button */}
           <div>
             <Link
