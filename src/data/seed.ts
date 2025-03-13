@@ -187,7 +187,7 @@ export const initialData: SeedData = {
       images: ['1700280-00-A_0_2000.jpg', '1700280-00-A_1.jpg'],
       inStock: 17,
       price: 35,
-      sizes: ['XS', 'S', 'XL', 'XXL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -211,7 +211,7 @@ export const initialData: SeedData = {
       images: ['8764734-00-A_0_2000.jpg', '8764734-00-A_1.jpg'],
       inStock: 12,
       price: 35,
-      sizes: ['XS', 'S', 'M'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -235,7 +235,7 @@ export const initialData: SeedData = {
       images: ['7652426-00-A_0_2000.jpg', '7652426-00-A_1.jpg'],
       inStock: 5,
       price: 35,
-      sizes: ['XS', 'S'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -259,7 +259,7 @@ export const initialData: SeedData = {
       images: ['8528839-00-A_0_2000.jpg', '8528839-00-A_2.jpg'],
       inStock: 2,
       price: 35,
-      sizes: ['XS', 'S', 'M'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -307,7 +307,7 @@ export const initialData: SeedData = {
       images: ['9877034-00-A_0_2000.jpg', '9877034-00-A_2.jpg'],
       inStock: 24,
       price: 35,
-      sizes: ['XL', 'XXL'],
+      sizes: ['M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -331,7 +331,7 @@ export const initialData: SeedData = {
       images: ['1633802-00-A_0_2000.jpg', '1633802-00-A_2.jpg'],
       inStock: 5,
       price: 30,
-      sizes: ['XS', 'S', 'XXL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -451,7 +451,7 @@ export const initialData: SeedData = {
       images: ['8529198-00-A_0_2000.jpg', '8529198-00-A_1.jpg'],
       inStock: 12,
       price: 40,
-      sizes: ['XS', 'XXL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -547,7 +547,7 @@ export const initialData: SeedData = {
       images: ['1740140-00-A_0_2000.jpg', '1740140-00-A_1.jpg'],
       inStock: 7,
       price: 85,
-      sizes: ['XS', 'S', 'M'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -595,7 +595,7 @@ export const initialData: SeedData = {
       images: ['8529107-00-A_0_2000.jpg', '8529107-00-A_1.jpg'],
       inStock: 15,
       price: 70,
-      sizes: ['XS', 'S', 'XL', 'XXL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
         '#334155',
@@ -873,7 +873,7 @@ export const initialData: SeedData = {
       images: ['8765115-00-A_0_2000.jpg', '8765115-00-A_1.jpg'],
       inStock: 5,
       price: 35,
-      sizes: ['XL', 'XXL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: [
         '#0f172a',
         '#334155',
