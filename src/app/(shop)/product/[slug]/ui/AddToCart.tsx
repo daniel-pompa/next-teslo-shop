@@ -14,11 +14,16 @@ export const AddToCart = ({ product }: Props) => {
   const [selectedColor, setSelectedColor] = useState<Color | undefined>();
   const [selectedSize, setSelectedSize] = useState<Size | undefined>();
   const [quantity, setQuantity] = useState<number>(1);
-  const [posted, setPosted] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleAddToCart = () => {
-    setPosted(true);
-    if (!selectedColor || !selectedSize) return;
+    if (!selectedColor || !selectedSize) {
+      setShowError(true); // Displays the error if no color or size is selected.
+      setTimeout(() => setShowError(false), 3000); // Hides the error message
+      return;
+    }
+
     const cartProduct: CartProduct = {
       id: product.id,
       title: product.title,
@@ -29,18 +34,27 @@ export const AddToCart = ({ product }: Props) => {
       quantity: quantity,
       image: product.images[0],
     };
+
     addproductToCart(cartProduct);
-    setPosted(false);
     setSelectedColor(undefined);
     setSelectedSize(undefined);
     setQuantity(1);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000); // Hides success message
   };
 
   return (
     <>
-      {posted && (!selectedColor || !selectedSize) && (
+      {/* Error message for missing color or size */}
+      {showError && (!selectedColor || !selectedSize) && (
         <div className='bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded fade-in'>
           <p>You must select a color and a size</p>
+        </div>
+      )}
+      {/* Success message for added to cart */}
+      {showSuccess && (
+        <div className='bg-green-100 border border-green-300 text-green-700 px-4 py-2 rounded fade-in'>
+          <p>Product added to cart successfully!</p>
         </div>
       )}
       {/* Color selector */}
