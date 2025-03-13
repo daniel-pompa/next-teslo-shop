@@ -26,7 +26,11 @@ export const StockLabel = ({ slug }: Props) => {
         <div className='p-2 rounded animate-pulse bg-slate-200'>&nbsp;</div>
       ) : (
         <h3 className={`font-semibold ${stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-          {stock > 0 ? `Only ${stock} left!` : 'Temporarily out of stock'}
+          {stock > 0 && stock <= 10
+            ? `Only ${stock} left!`
+            : stock > 10
+            ? 'In stock'
+            : 'Temporarily out of stock'}
         </h3>
       )}
     </>
