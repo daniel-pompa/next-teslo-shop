@@ -9,6 +9,7 @@ import { QuantitySelector } from '@/components';
 export const ProductsInCart = () => {
   const productsInCart = useCartStore(state => state.cart);
   const updateProductQuantity = useCartStore(state => state.updateProductQuantity);
+  const removeProductFromCart = useCartStore(state => state.removeProductFromCart);
 
   return (
     <>
@@ -18,7 +19,10 @@ export const ProductsInCart = () => {
           className='flex flex-col sm:flex-row items-center gap-6 p-4 mb-4 border rounded-md hover:shadow-lg transition-shadow duration-300 ease-in-out relative'
         >
           {/* Remove button */}
-          <button className='absolute top-4 right-4 p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors duration-200'>
+          <button
+            onClick={() => removeProductFromCart(product)}
+            className='absolute top-4 right-4 p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors duration-200'
+          >
             <FaTrash size={20} />
           </button>
           {/* Product image */}
