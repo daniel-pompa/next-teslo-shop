@@ -3,7 +3,7 @@ import { IoCartOutline } from 'react-icons/io5';
 
 export default function EmptyPage() {
   return (
-    <div className='flex flex-col items-center justify-center p-4'>
+    <div className='flex flex-col items-center justify-center p-4 mt-44'>
       <div className='mb-6'>
         <IoCartOutline size={120} className='text-slate-500' />
       </div>

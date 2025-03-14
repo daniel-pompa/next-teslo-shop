@@ -62,12 +62,12 @@ export const TopMenu = () => {
                 className='text-slate-700 hover:text-slate-900 transition-colors duration-300'
               />
             </Link>
-            <Link href='/cart'>
+            <Link href={totalItemsInCart === 0 && loaded ? 'empty' : '/cart'}>
               <div className='relative'>
                 {
                   // Show badge if there are items in the cart
                   loaded && totalItemsInCart > 0 && (
-                    <span className='absolute -top-2 -right-2 bg-blue-600 w-4 h-4 text-xs text-white rounded-full flex items-center justify-center'>
+                    <span className='absolute -top-2 -right-2 bg-blue-600 w-4 h-4 text-xs text-white rounded-full flex items-center justify-center fade-in'>
                       {totalItemsInCart}
                     </span>
                   )

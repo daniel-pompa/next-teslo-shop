@@ -1,9 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store';
 import { formatCurrency } from '@/utils';
 
 export const OrderSummary = () => {
+  const router = useRouter();
+
   const [loaded, setLoaded] = useState(false);
 
   const { getSummaryInformation } = useCartStore();
@@ -14,6 +17,12 @@ export const OrderSummary = () => {
   useEffect(() => {
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (itemsInCart === 0 && loaded === true) {
+      router.replace('/empty');
+    }
+  }, [itemsInCart, loaded, router]);
 
   if (!loaded) return <p>Loading...</p>;
 
