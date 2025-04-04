@@ -48,6 +48,9 @@
   .btn-danger {
     @apply bg-red-600 hover:bg-red-700 text-white rounded py-2 px-4 transition-colors duration-200;
   }
+  .btn-disabled {
+    @apply bg-blue-400 text-white rounded py-2 px-4 cursor-not-allowed;
+  }
 }
 
 @keyframes fadeIn {
