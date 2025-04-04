@@ -11,10 +11,16 @@ import {
 } from 'react-icons/io5';
 import { RiLoginCircleFill, RiLogoutCircleFill } from 'react-icons/ri';
 import { useUIStore } from '@/store';
+import { logOut } from '@/actions';
 
 export const SideMenu = () => {
   const isSideMenuOpen = useUIStore(state => state.isSideMenuOpen);
   const closeSideMenu = useUIStore(state => state.closeSideMenu);
+
+  const handleSignOut = () => {
+    logOut();
+    closeSideMenu();
+  };
 
   return (
     <div>
@@ -57,7 +63,8 @@ export const SideMenu = () => {
         <nav className='relative mt-10 px-4'>
           {/* Menu items */}
           <Link
-            href='/'
+            href='/profile'
+            onClick={closeSideMenu}
             className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
           >
             <IoPersonCircle size={24} className='text-slate-700 mr-2' />
@@ -71,7 +78,8 @@ export const SideMenu = () => {
             <span>Orders</span>
           </Link>
           <Link
-            href='/'
+            href='/auth/sign-in'
+            onClick={closeSideMenu}
             className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
           >
             <RiLoginCircleFill size={24} className='text-slate-700 mr-2' />
@@ -79,6 +87,7 @@ export const SideMenu = () => {
           </Link>
           <Link
             href='/'
+            onClick={handleSignOut}
             className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
           >
             <RiLogoutCircleFill size={24} className='text-slate-700 mr-2' />
