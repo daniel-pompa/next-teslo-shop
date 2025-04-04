@@ -1,3 +1,5 @@
+import brcyptjs from 'bcryptjs';
+
 interface SeedProduct {
   description: string;
   images: string[];
@@ -10,6 +12,13 @@ interface SeedProduct {
   title: string;
   type: Type;
   gender: 'men' | 'women' | 'kid' | 'unisex';
+}
+
+interface SeedUser {
+  name: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'user';
 }
 
 type Size = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
@@ -26,11 +35,26 @@ type Color =
   | '#1d4ed8';
 
 interface SeedData {
+  users: SeedUser[];
   categories: string[];
   products: SeedProduct[];
 }
 
 export const initialData: SeedData = {
+  users: [
+    {
+      name: 'Daniel Pompa',
+      email: 'admin@example.com',
+      password: brcyptjs.hashSync('123456', 10),
+      role: 'admin',
+    },
+    {
+      name: 'Emma Ciambrino',
+      email: 'user@example.com',
+      password: brcyptjs.hashSync('654321', 10),
+      role: 'user',
+    },
+  ],
   categories: ['Shirts', 'Pants', 'Hoodies', 'Hats'],
   products: [
     {
