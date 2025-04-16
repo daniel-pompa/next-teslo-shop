@@ -29,7 +29,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         if (!user) return null;
 
         // Check if password is correct
-        if (!bcryptjs.compareSync(password, user.password)) return null;
+         const isPasswordValid = await bcryptjs.compare(password, user.password);
+         
+         if (!isPasswordValid) return null;
 
         // Return user without password
         const { password: _, ...rest } = user;
