@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 import clsx from 'clsx';
 import {
   IoCart,
@@ -11,16 +12,34 @@ import {
 } from 'react-icons/io5';
 import { RiLoginCircleFill, RiLogoutCircleFill } from 'react-icons/ri';
 import { useUIStore } from '@/store';
-import { logOut } from '@/actions';
+import { useEffect, useRef } from 'react';
 
 export const SideMenu = () => {
   const isSideMenuOpen = useUIStore(state => state.isSideMenuOpen);
   const closeSideMenu = useUIStore(state => state.closeSideMenu);
 
-  const handleSignOut = () => {
-    logOut();
+  const { data: session, update } = useSession();
+
+  const isAuthenticated = !!session?.user;
+  const isAdmin = session?.user.role === 'admin';
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
     closeSideMenu();
   };
+
+  const hasUpdatedSession = useRef(false);
+
+  useEffect(() => {
+    if (isSideMenuOpen && !hasUpdatedSession.current) {
+      update();
+      hasUpdatedSession.current = true;
+    }
+
+    if (!isSideMenuOpen) {
+      hasUpdatedSession.current = false;
+    }
+  }, [isSideMenuOpen, update]);
 
   return (
     <div>
@@ -62,60 +81,72 @@ export const SideMenu = () => {
         {/* Menu */}
         <nav className='relative mt-10 px-4'>
           {/* Menu items */}
-          <Link
-            href='/profile'
-            onClick={closeSideMenu}
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <IoPersonCircle size={24} className='text-slate-700 mr-2' />
-            <span>Profile</span>
-          </Link>
-          <Link
-            href='/'
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <IoCart size={24} className='text-slate-700 mr-2' />
-            <span>Orders</span>
-          </Link>
-          <Link
-            href='/auth/sign-in'
-            onClick={closeSideMenu}
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <RiLoginCircleFill size={24} className='text-slate-700 mr-2' />
-            <span>Sign in</span>
-          </Link>
-          <Link
-            href='/'
-            onClick={handleSignOut}
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <RiLogoutCircleFill size={24} className='text-slate-700 mr-2' />
-            <span>Sign out</span>
-          </Link>
-          {/* Divider */}
-          <div className='w-full h-[1px] bg-slate-200 my-5'></div>
-          <Link
-            href='/'
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <IoShirt size={24} className='text-slate-700 mr-2' />
-            <span>Products</span>
-          </Link>
-          <Link
-            href='/'
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <IoCart size={24} className='text-slate-700 mr-2' />
-            <span>Orders</span>
-          </Link>
-          <Link
-            href='/'
-            className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
-          >
-            <IoPeople size={24} className='text-slate-700 mr-2' />
-            <span>Customers</span>
-          </Link>
+          {!isAuthenticated && (
+            <Link
+              href='/auth/sign-in'
+              onClick={closeSideMenu}
+              className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+            >
+              <RiLoginCircleFill size={24} className='text-slate-700 mr-2' />
+              <span>Sign in</span>
+            </Link>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <Link
+                href='/profile'
+                onClick={closeSideMenu}
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <IoPersonCircle size={24} className='text-slate-700 mr-2' />
+                <span>Profile</span>
+              </Link>
+              <Link
+                href='/'
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <IoCart size={24} className='text-slate-700 mr-2' />
+                <span>Orders</span>
+              </Link>
+              <Link
+                href='/'
+                onClick={handleSignOut}
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <RiLogoutCircleFill size={24} className='text-slate-700 mr-2' />
+                <span>Sign out</span>
+              </Link>
+            </>
+          )}
+
+          {/* Admin section */}
+          {isAdmin && (
+            <>
+              <div className='w-full h-[1px] bg-slate-200 my-5'></div>
+              <Link
+                href='/'
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <IoShirt size={24} className='text-slate-700 mr-2' />
+                <span>Products</span>
+              </Link>
+              <Link
+                href='/'
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <IoCart size={24} className='text-slate-700 mr-2' />
+                <span>Orders</span>
+              </Link>
+              <Link
+                href='/'
+                className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
+              >
+                <IoPeople size={24} className='text-slate-700 mr-2' />
+                <span>Customers</span>
+              </Link>
+            </>
+          )}
         </nav>
       </aside>
     </div>
