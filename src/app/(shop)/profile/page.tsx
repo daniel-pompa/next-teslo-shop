@@ -43,6 +43,11 @@ export default async function ProfilePage() {
               <div className='text-center'>
                 <h3 className='font-semibold'>{user.name}</h3>
                 <p className='text-slate-500'>{user.email}</p>
+                {user.role && (
+                  <span className='mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600'>
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </span>
+                )}
               </div>
             </div>
           </div>
