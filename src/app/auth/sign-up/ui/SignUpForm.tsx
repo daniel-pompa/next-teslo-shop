@@ -1,10 +1,11 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import clsx from 'clsx';
-import { signUp } from '@/actions';
 import { MdError } from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { signUp, logIn } from '@/actions';
 
 type FormInputs = {
   name: string;
@@ -13,6 +14,8 @@ type FormInputs = {
 };
 
 export const SignUpForm = () => {
+  const router = useRouter();
+
   const [errorMessage, setErrorMessage] = useState('');
 
   // Clear the error message after 4 seconds
@@ -39,7 +42,8 @@ export const SignUpForm = () => {
       setErrorMessage(response.message);
       return;
     }
-    console.log(response);
+    await logIn(email.toLowerCase(), password);
+    router.replace('/');
   };
 
   return (
