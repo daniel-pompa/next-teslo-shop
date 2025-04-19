@@ -19,7 +19,7 @@ export const SignInForm = () => {
           type='email'
           name='email'
           id='email'
-          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400'
+          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
           placeholder='Enter your email'
           required
         />
@@ -32,7 +32,7 @@ export const SignInForm = () => {
           type='password'
           name='password'
           id='password'
-          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400'
+          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
           placeholder='Enter your password'
           required
           minLength={6}
