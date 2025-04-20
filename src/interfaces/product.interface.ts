@@ -9,7 +9,6 @@ export interface Product {
   slug: string;
   tags: string[];
   title: string;
-  type: Type;
   gender: Category;
 }
 

@@ -1,6 +1,7 @@
 'use server';
 import prisma from '@/lib/prisma';
 import { Gender } from '@prisma/client';
+import { Color } from '@/interfaces';
 
 interface PaginationOptions {
   page?: number;
@@ -46,9 +47,10 @@ export const getPaginatedProductsWithImages = async ({
     // Calculate total pages
     const totalPages = Math.ceil(totalCount / take);
 
-    // Transform products to include only image URLs
+    // Transform products to include colors (cast to Color) and image URLs
     const transformedProducts = products.map(product => ({
       ...product,
+      colors: product.colors.map(color => color as Color),
       images: product.ProductImage.map(image => image.url),
     }));
 
