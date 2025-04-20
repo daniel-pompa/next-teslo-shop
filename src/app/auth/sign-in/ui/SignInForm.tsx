@@ -5,14 +5,15 @@ import clsx from 'clsx';
 import { MdError } from 'react-icons/md';
 import { authenticate } from '@/actions';
 
-export const SignInForm = () => {
+export const SignInForm = ({ redirectTo }: { redirectTo: string }) => {
   const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
 
   return (
     <form action={formAction} className='flex flex-col gap-4'>
+      <input type='hidden' name='redirectTo' value={redirectTo} />
       <div className='flex flex-col gap-3'>
         {/* Email field */}
-        <label htmlFor='email' className='text-gray-700'>
+        <label htmlFor='email' className='text-slate-700'>
           Email
         </label>
         <input
@@ -25,7 +26,7 @@ export const SignInForm = () => {
         />
 
         {/* Password field */}
-        <label htmlFor='password' className='text-gray-700'>
+        <label htmlFor='password' className='text-slate-700'>
           Password
         </label>
         <input
@@ -62,10 +63,10 @@ export const SignInForm = () => {
       </button>
 
       {/* Divider */}
-      <div className='my-4 border-t border-gray-300'></div>
+      <div className='my-4 border-t border-slate-300'></div>
 
       {/* Sign up link */}
-      <p className='text-center text-sm text-gray-600'>
+      <p className='text-center text-sm text-slate-600'>
         Don&#39;t have an account?{' '}
         <Link
           href='/auth/sign-up'
