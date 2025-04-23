@@ -1,3 +1,4 @@
+export * from './address/set-user-address';
 export * from './auth/sign-in';
 export * from './auth/sign-out';
 export * from './auth/sign-up';

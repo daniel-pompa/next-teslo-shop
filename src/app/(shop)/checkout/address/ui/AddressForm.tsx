@@ -1,9 +1,11 @@
 'use client';
+import { useSession } from 'next-auth/react';
 import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
 import type { Country } from '@/interfaces';
 import { useAddressStore } from '@/store';
 import { useEffect } from 'react';
+import { setUserAddress } from '@/actions';
 
 type FormInputs = {
   firstName: string;
@@ -33,15 +35,25 @@ export const AddressForm = ({ countries }: Props) => {
     },
   });
 
+  const { data: session } = useSession({ required: true });
+
   const setAddress = useAddressStore(state => state.setAddress);
   const address = useAddressStore(state => state.address);
-
+  
   useEffect(() => {
     if (address.firstName) reset(address);
   }, [address, reset]);
 
   const onSubmit = (data: FormInputs) => {
     setAddress(data);
+
+    const { saveAddress, ...rest } = data;
+
+    if (saveAddress) {
+      setUserAddress(rest, session!.user.id);
+    } else {
+      // TODO: Delete address
+    }
   };
 
   return (
