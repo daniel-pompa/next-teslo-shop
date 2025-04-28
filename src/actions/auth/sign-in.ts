@@ -4,7 +4,10 @@ import { signIn } from '@/auth';
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
-    await signIn('credentials', formData);
+    await signIn('credentials', {
+      redirect: false,
+      ...Object.fromEntries(formData),
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

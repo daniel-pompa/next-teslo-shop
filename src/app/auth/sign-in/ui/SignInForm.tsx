@@ -5,12 +5,23 @@ import clsx from 'clsx';
 import { MdError } from 'react-icons/md';
 import { authenticate } from '@/actions';
 
-export const SignInForm = ({ redirectTo }: { redirectTo: string }) => {
-  const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
+  const [errorMessage, formAction, isPending] = useActionState(
+    async (prevState: string | undefined, formData: FormData) => {
+      const error = await authenticate(prevState, formData);
+
+      if (!error) {
+        window.location.href = callbackUrl;
+      }
+
+      return error;
+    },
+    undefined
+  );
 
   return (
     <form action={formAction} className='flex flex-col gap-4'>
-      <input type='hidden' name='redirectTo' value={redirectTo} />
+      <input type='hidden' name='callbackUrl' value={callbackUrl} />
       <div className='flex flex-col gap-3'>
         {/* Email field */}
         <label htmlFor='email' className='text-slate-700'>
