@@ -1,13 +1,24 @@
 'use server';
-import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
-export async function authenticate(prevState: string | undefined, formData: FormData) {
+/**
+ * Used in a server action to authenticate a user from FormData.
+ * Returns an error message string on failure, or undefined on success.
+ */
+export async function authenticate(formData: FormData): Promise<string | undefined> {
+  const { email, password } = Object.fromEntries(formData) as {
+    email: string;
+    password: string;
+  };
+
   try {
     await signIn('credentials', {
+      email,
+      password,
       redirect: false,
-      ...Object.fromEntries(formData),
     });
+    return undefined;
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -21,9 +32,18 @@ export async function authenticate(prevState: string | undefined, formData: Form
   }
 }
 
+/**
+ * Automatically logs in the user after successful registration.
+ * Called in the SignUpForm component to sign in the user immediately after account creation.
+ * Returns an object with a success flag and an optional error message.
+ */
 export const logIn = async (email: string, password: string) => {
   try {
-    await signIn('credentials', { email, password });
+    await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    });
     return { ok: true };
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {

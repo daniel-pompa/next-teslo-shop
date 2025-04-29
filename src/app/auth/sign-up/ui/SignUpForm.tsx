@@ -18,7 +18,7 @@ export const SignUpForm = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Clear the error message after 4 seconds
+  // Automatically clears error messages after 4 seconds
   useEffect(() => {
     if (!errorMessage) return;
     const timeout = setTimeout(() => {
@@ -33,7 +33,10 @@ export const SignUpForm = () => {
     formState: { errors },
   } = useForm<FormInputs>();
 
-  // Handle form submission and sign up user
+  /**
+   * Handles the sign-up and auto login process.
+   * On success, redirects the user to the homepage.
+   */
   const onSubmit: SubmitHandler<FormInputs> = async data => {
     setErrorMessage('');
     const { name, email, password } = data;

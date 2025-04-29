@@ -1,19 +1,19 @@
 'use client';
-import Link from 'next/link';
 import { useActionState } from 'react';
+import Link from 'next/link';
 import clsx from 'clsx';
 import { MdError } from 'react-icons/md';
 import { authenticate } from '@/actions';
 
-export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
+type Props = {
+  callbackUrl: string;
+};
+
+export const SignInForm = ({ callbackUrl }: Props) => {
   const [errorMessage, formAction, isPending] = useActionState(
-    async (prevState: string | undefined, formData: FormData) => {
-      const error = await authenticate(prevState, formData);
-
-      if (!error) {
-        window.location.href = callbackUrl;
-      }
-
+    async (_prevState: string | undefined, formData: FormData) => {
+      const error = await authenticate(formData);
+      if (!error) window.location.href = callbackUrl;
       return error;
     },
     undefined
@@ -22,8 +22,8 @@ export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
   return (
     <form action={formAction} className='flex flex-col gap-4'>
       <input type='hidden' name='callbackUrl' value={callbackUrl} />
+
       <div className='flex flex-col gap-3'>
-        {/* Email field */}
         <label htmlFor='email' className='text-slate-700'>
           Email
         </label>
@@ -31,12 +31,11 @@ export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
           type='email'
           name='email'
           id='email'
+          required
           className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
           placeholder='Enter your email'
-          required
         />
 
-        {/* Password field */}
         <label htmlFor='password' className='text-slate-700'>
           Password
         </label>
@@ -44,14 +43,13 @@ export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
           type='password'
           name='password'
           id='password'
-          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
-          placeholder='Enter your password'
           required
           minLength={6}
+          className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
+          placeholder='Enter your password'
         />
       </div>
 
-      {/* Error message */}
       {errorMessage && (
         <div className='flex items-center gap-1 text-sm text-red-600' aria-live='polite'>
           <MdError className='h-5 w-5' />
@@ -59,24 +57,20 @@ export const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
         </div>
       )}
 
-      {/* Sign in button */}
       <button
         type='submit'
+        disabled={isPending}
         className={clsx('mt-2 py-2 px-4 rounded-md text-white font-medium', {
           'btn-primary': !isPending,
           'btn-disabled': isPending,
         })}
-        disabled={isPending}
-        aria-disabled={isPending}
         aria-label='Sign in to your account'
       >
         Sign in
       </button>
 
-      {/* Divider */}
-      <div className='my-4 border-t border-slate-300'></div>
+      <div className='my-4 border-t border-slate-300' />
 
-      {/* Sign up link */}
       <p className='text-center text-sm text-slate-600'>
         Don&#39;t have an account?{' '}
         <Link
