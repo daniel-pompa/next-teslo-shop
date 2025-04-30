@@ -1,119 +1,166 @@
-import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { IoMail, IoShieldCheckmark, IoPerson } from 'react-icons/io5';
+import Image from 'next/image';
+import { IoMail, IoPerson, IoLocationSharp, IoCall, IoEarth } from 'react-icons/io5';
 import { auth } from '@/auth';
-import { logOut } from '@/actions';
 import { Title } from '@/components';
+import { getUserProfile } from '@/actions';
 
 export default async function ProfilePage() {
   const session = await auth();
 
   if (!session?.user) redirect('/');
 
-  const user = session.user;
+  const user = await getUserProfile(session.user.id);
+
+  if (!user) redirect('/');
 
   return (
-    <div className='fade-in'>
+    <div className='fade-in max-w-6xl mx-auto sm:px-6 lg:px-8'>
       <div className='mb-8'>
-        <Title title='Profile' subtitle='Your personal information' />
+        <Title title='Profile' subtitle='Manage your account information' />
       </div>
 
-      <div className='grid gap-6 md:grid-cols-3'>
+      <div className='grid gap-6 lg:grid-cols-4'>
         {/* Profile Card */}
-        <div className='rounded-md border border-slate-200 bg-white shadow-sm md:col-span-1'>
-          <div className='p-6'>
-            <div className='flex flex-col items-center gap-4'>
+        <div className='lg:col-span-1'>
+          <div className='rounded-md border border-slate-200 shadow-sm overflow-hidden h-full'>
+            <div className='p-6 flex flex-col items-center gap-4'>
               {/* Avatar */}
-              <div className='relative h-24 w-24 rounded-full border-4 border-blue-100'>
+              <div className='relative h-32 w-32 rounded-full border-4 border-blue-100'>
                 {user.image ? (
                   <Image
                     src={user.image}
-                    alt={user.name || 'User'}
-                    width={96}
-                    height={96}
+                    alt={user.name || 'User avatar'}
+                    width={128}
+                    height={128}
                     className='h-full w-full rounded-full object-cover'
+                    priority
                   />
                 ) : (
-                  <div className='flex h-full w-full items-center justify-center rounded-full bg-blue-500 text-4xl font-medium text-white'>
+                  <div className='flex h-full w-full items-center justify-center rounded-full bg-blue-600 text-4xl font-medium text-white'>
                     {user.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
               </div>
 
-              <div className='text-center'>
-                <h3 className='font-semibold'>{user.name}</h3>
-                <p className='text-slate-500'>{user.email}</p>
-                {user.role && (
-                  <span className='mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600'>
-                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                  </span>
+              <div className='text-center space-y-1'>
+                <h3>{user.name}</h3>
+                <span className='inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600'>
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                </span>
+              </div>
+            </div>
+            {/* Static buttons for layout purposes only */}
+            <div className='p-6 space-y-3 border-t border-slate-200'>
+              <button className='btn-primary w-full flex items-center justify-center text-sm'>
+                Edit profile
+              </button>
+              <button className='btn-secondary w-full flex items-center justify-center text-sm'>
+                Security settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Info Card */}
+        <div className='lg:col-span-3'>
+          <div className='rounded-md border border-slate-200 shadow-sm overflow-hidden h-full'>
+            <div className='border-b border-slate-200 p-6'>
+              <h3>Account details</h3>
+            </div>
+
+            <div className='p-6 space-y-8'>
+              {/* Personal Info */}
+              <div>
+                <h4 className='font-medium mb-6'>Personal information</h4>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                  <InfoField
+                    icon={<IoPerson className='h-5 w-5 text-blue-600' />}
+                    label='Name'
+                    value={user.name || 'Not provided'}
+                  />
+                  <InfoField
+                    icon={<IoMail className='h-5 w-5 text-blue-600' />}
+                    label='Email'
+                    value={user.email}
+                  />
+                  <InfoField
+                    icon={<IoCall className='h-5 w-5 text-blue-600' />}
+                    label='Phone'
+                    value={user.address ? user.address.phone : 'Not provided'}
+                  />
+                </div>
+              </div>
+
+              {/* Address Info */}
+              <div>
+                <h4 className='text-md font-medium text-slate-700 mb-6'>
+                  Address information
+                </h4>
+                {user.address ? (
+                  <div className='flex flex-col md:flex-row gap-6'>
+                    <div>
+                      <InfoField
+                        icon={<IoEarth className='h-5 w-5 text-blue-600' />}
+                        label='Country'
+                        value={user.address?.country?.name ?? 'Not provided'}
+                      />
+                    </div>
+                    <div>
+                      <InfoField
+                        icon={<IoLocationSharp className='h-5 w-5 text-blue-600' />}
+                        label='Full address'
+                        value={formatAddress(user.address)}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className='text-center p-6 bg-slate-50 rounded-md'>
+                    <p>No address information available</p>
+                  </div>
                 )}
               </div>
             </div>
           </div>
-
-          <div className='space-y-3 border-t p-6'>
-            <div className='flex flex-col gap-3 md:flex-row'>
-              <button className='flex w-full items-center justify-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 md:w-1/2'>
-                Edit profile
-              </button>
-              <button
-                className='flex w-full items-center justify-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 md:w-1/2'
-                onClick={logOut}
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Information card */}
-        <div className='rounded-md border border-slate-200 bg-white shadow-sm md:col-span-2'>
-          <div className='border-b p-6'>
-            <h3>Personal information</h3>
-          </div>
+// Format full address
+function formatAddress(address: {
+  address: string;
+  address2?: string | null;
+  city: string;
+  zipCode: string;
+}) {
+  return (
+    <>
+      {address.address}
+      {address.address2 && <>, {address.address2}</>}
+      {', '}
+      {address.city}, {address.zipCode}
+    </>
+  );
+}
 
-          <div className='grid gap-6 p-6'>
-            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
-              {/* Name field */}
-              <div className='flex items-center gap-4'>
-                <div className='rounded-md bg-blue-100 p-3'>
-                  <IoPerson className='h-5 w-5 text-blue-600' />
-                </div>
-                <div>
-                  <p className='text-slate-500'>Full name</p>
-                  <p>{user.name || 'Not provided'}</p>
-                </div>
-              </div>
-
-              {/* Email field */}
-              <div className='flex items-center gap-4'>
-                <div className='rounded-md bg-blue-100 p-3'>
-                  <IoMail className='h-5 w-5 text-blue-600' />
-                </div>
-                <div>
-                  <p className='text-slate-500'>Email</p>
-                  <p>{user.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Security section */}
-            <div className='border-t pt-6'>
-              <h4 className='mb-3 font-medium'>Account security</h4>
-              <div className='flex flex-col gap-3 sm:flex-row'>
-                <button className='flex items-center justify-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50'>
-                  <IoShieldCheckmark className='h-5 w-5' />
-                  2FA
-                </button>
-                <button className='flex items-center justify-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50'>
-                  <IoShieldCheckmark className='h-5 w-5' />
-                  Change password
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+// Info field display component
+function InfoField({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className='flex items-start gap-4'>
+      <div className='rounded-lg bg-blue-50 p-3 flex-shrink-0'>{icon}</div>
+      <div className='min-w-0'>
+        <p className='text-sm text-slate-500 mb-1'>{label}</p>
+        <p className='font-medium text-slate-800 break-words'>{value}</p>
       </div>
     </div>
   );
