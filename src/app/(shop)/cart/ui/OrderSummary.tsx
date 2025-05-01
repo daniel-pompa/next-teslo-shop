@@ -24,7 +24,7 @@ export const OrderSummary = () => {
     }
   }, [itemsInCart, loaded, router]);
 
-  if (!loaded) return <p>Loading...</p>;
+  if (!loaded) return <p className='text-center my-3'>Loading...</p>;
 
   return (
     <>

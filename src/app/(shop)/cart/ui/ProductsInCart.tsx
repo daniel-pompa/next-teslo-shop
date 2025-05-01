@@ -16,42 +16,45 @@ export const ProductsInCart = () => {
       {productsInCart.map(product => (
         <div
           key={`${product.slug}-${product.size}`}
-          className='flex flex-col sm:flex-row items-center gap-6 p-4 mb-4 border rounded-md hover:shadow-lg transition-shadow duration-300 ease-in-out relative'
+          className='relative flex flex-col sm:flex-row items-center gap-5 p-4 mb-4 border border-slate-200 rounded-md shadow-sm hover:shadow-md transition-shadow duration-300'
         >
           {/* Remove button */}
           <button
             onClick={() => removeProductFromCart(product)}
             className='absolute top-4 right-4 p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors duration-200'
+            aria-label='Remove product'
           >
-            <FaTrash size={20} />
+            <FaTrash size={16} />
           </button>
           {/* Product image */}
           <div className='flex-shrink-0'>
             <Image
               src={`/products/${product.image}`}
               alt={product.title}
-              width={220}
-              height={220}
+              width={176}
+              height={176}
               priority
-              className='rounded-md w-44 h-44 object-cover'
+              className='rounded-lg w-44 h-44 object-cover'
             />
           </div>
           {/* Product details */}
-          <div className='w-full flex-1 text-center sm:text-left'>
-            <div className='flex items-center'>
-              <div className='bg-slate-100 border rounded-full text-sm w-8 h-8 flex items-center justify-center mr-2'>
-                {product.size}
+          <div className='w-full flex-1'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1'>
+              {/* Product size and title */}
+              <div className='flex flex-col sm:flex-row sm:items-center gap-2'>
+                <div className='bg-slate-100 border rounded-full text-sm w-8 h-8 flex items-center justify-center font-medium text-gray-700 self-start sm:self-auto'>
+                  {product.size}
+                </div>
+                <Link
+                  href={`/product/${product.slug}`}
+                  className='text-lg sm:text-xl font-semibold hover:underline'
+                >
+                  {product.title}
+                </Link>
               </div>
-              <Link
-                href={`/product/${product.slug}`}
-                className='text-xl font-semibold hover:underline'
-              >
-                {product.title}
-              </Link>
+              {/* Price */}
+              <p className='font-bold'>{formatCurrency(product.price)}</p>
             </div>
-            <p className='text-lg font-bold mt-2 text-slate-700'>
-              {formatCurrency(product.price)}
-            </p>
             {/* Quantity selector */}
             <div className='mt-4'>
               <QuantitySelector
