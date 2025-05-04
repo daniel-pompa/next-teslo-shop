@@ -1,13 +1,18 @@
 'use client';
 import Link from 'next/link';
-import { FaMapMarkerAlt, FaShoppingCart } from 'react-icons/fa';
-import { formatCurrency } from '@/utils';
-import { useEffect, useState } from 'react';
-import { useAddressStore, useCartStore } from '@/store';
+import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { FaMapMarkerAlt, FaShoppingCart } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { placeOrder } from '@/actions';
+import { useAddressStore, useCartStore } from '@/store';
+import { formatCurrency } from '@/utils';
 
 export const PlaceOrder = () => {
+  const router = useRouter();
+
   const [loaded, setLoaded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const deliveryAddress = useAddressStore(state => state.address);
@@ -18,9 +23,20 @@ export const PlaceOrder = () => {
 
   const cart = useCartStore(state => state.cart);
 
+  const clearCart = useCartStore(state => state.clearCart);
+
   useEffect(() => {
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage('');
+      }, 5000); // Hide the error message after 5 seconds
+      return () => clearTimeout(timer); // Cleanup timer on component unmount or errorMessage change
+    }
+  }, [errorMessage]);
 
   const onPlaceOrder = async () => {
     setIsPlacingOrder(true);
@@ -29,8 +45,16 @@ export const PlaceOrder = () => {
       quantity: product.quantity,
       size: product.size,
     }));
-    console.log(deliveryAddress, productsToBuy);
-    setIsPlacingOrder(false);
+    // Place order - Server action
+    const response = await placeOrder(productsToBuy, deliveryAddress);
+    if (!response.ok) {
+      setIsPlacingOrder(false);
+      setErrorMessage(response.message || 'An error occurred. Please try again.');
+      return;
+    }
+    // Clear cart after placing order successfully
+    clearCart();
+    router.replace(`/orders/${response.order?.id}`); // Redirect to order page
   };
 
   if (!loaded) return <p className='text-center my-3'>Loading...</p>;
@@ -113,6 +137,12 @@ export const PlaceOrder = () => {
         </Link>
         .
       </p>
+      {/* Error message */}
+      {errorMessage && (
+        <div className='text-sm bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded fade-in mb-4'>
+          <p>{errorMessage}</p>
+        </div>
+      )}
       {/* Order button */}
       <div>
         <button

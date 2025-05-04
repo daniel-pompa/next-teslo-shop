@@ -17,6 +17,7 @@ interface State {
   addProductToCart: (product: CartProduct) => void;
   updateProductQuantity: (product: CartProduct, quantity: number) => void;
   removeProductFromCart: (product: CartProduct) => void;
+  clearCart: () => void;
 }
 
 // Create the store with Zustand, DevTools, and Persist middleware
@@ -54,7 +55,7 @@ export const useCartStore = create<State>()(
           );
           // If the product is not in the cart, add it and exit the function
           if (!productInCart) {
-            set({ cart: [...cart, product] }, false, 'addProductToCart'); // Update state
+            set({ cart: [...cart, product] }); // Update state
             return; // Exit to avoid unnecessary updates
           }
           // If the product is already in the cart, update its quantity
@@ -72,7 +73,7 @@ export const useCartStore = create<State>()(
             return item; // Return unchanged items
           });
           // Update the cart with the new quantities
-          set({ cart: updatedCartProducts }, false, 'updateProductQuantity');
+          set({ cart: updatedCartProducts });
         },
         // Function to update the quantity of a product in the cart
         updateProductQuantity: (product: CartProduct, quantity: number) => {
@@ -86,7 +87,7 @@ export const useCartStore = create<State>()(
             }
             return item; // Return unchanged items
           });
-          set({ cart: updatedCartProducts }, false, 'updateProductQuantity'); // Update state
+          set({ cart: updatedCartProducts }); // Update state
         },
         // Function to remove a product from the cart
         removeProductFromCart: (product: CartProduct) => {
@@ -94,7 +95,11 @@ export const useCartStore = create<State>()(
           const updatedCartProducts = cart.filter(
             item => item.id !== product.id || item.size !== product.size
           );
-          set({ cart: updatedCartProducts }, false, 'removeProductFromCart'); // Update state
+          set({ cart: updatedCartProducts }); // Update state
+        },
+        // Function to clear the cart
+        clearCart: () => {
+          set({ cart: [] }); // Update state
         },
       }),
       {
