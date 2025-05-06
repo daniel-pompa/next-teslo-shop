@@ -106,6 +106,7 @@ model Order {
   subtotal     Float
   tax          Float
   total        Float
+  shippingCost Float         @default(0)
   itemsInOrder Int
   isPaid       Boolean       @default(false)
   paidAt       DateTime?
