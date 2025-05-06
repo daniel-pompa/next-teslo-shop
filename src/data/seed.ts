@@ -752,7 +752,7 @@ export const initialData: SeedData = {
         "Introducing the Tesla raven collection. The women's raven slouchy crew sweatshirt has a premium, relaxed silhouette made from a sustainable bamboo cotton blend. The slouchy crew features a subtle thermoplastic polyurethane Tesla wordmark on the left sleeve and a french terry interior for a cozy look and feel in every season. Pair it with your raven joggers or favorite on the go fit. Made from 70% bamboo and 30% cotton.",
       images: ['1740260-00-A_0_2000.jpg', '1740260-00-A_1.jpg'],
       inStock: 9,
-      price: 110,
+      price: 70,
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
@@ -944,7 +944,7 @@ export const initialData: SeedData = {
         "Inspired by our popular home battery, the Tesla Powerwall tee is made from 100% cotton and features the phrase 'Pure Energy' under our signature logo in the back. Designed for fit, comfort and style, the exclusive tee promotes sustainable energy in any",
       images: ['9877040-00-A_0_2000.jpg', '9877040-00-A_1.jpg'],
       inStock: 10,
-      price: 130,
+      price: 30,
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       colors: [
         '#0f172a',
