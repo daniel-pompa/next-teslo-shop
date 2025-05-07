@@ -19,10 +19,10 @@ export const PlaceOrder = () => {
 
   const { getSummaryInformation } = useCartStore();
 
-  const { itemsInCart, subTotal, tax, total } = getSummaryInformation();
+  // Get the summary information from the store
+  const { itemsInCart, subTotal, tax, shippingCost, total } = getSummaryInformation();
 
   const cart = useCartStore(state => state.cart);
-
   const clearCart = useCartStore(state => state.clearCart);
 
   useEffect(() => {
@@ -61,11 +61,10 @@ export const PlaceOrder = () => {
 
   return (
     <div className='bg-slate-50 p-6 rounded-lg shadow-md h-fit'>
-      {/* Delivery Address */}
+      {/* Delivery address */}
       <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
         <FaMapMarkerAlt /> Delivery address
       </h2>
-      {/* Display delivery address */}
       <div className='space-y-4'>
         <p>
           <span className='font-bold'>Name:</span> {deliveryAddress.firstName}{' '}
@@ -94,8 +93,7 @@ export const PlaceOrder = () => {
       </div>
       {/* Divider */}
       <div className='w-full h-[1px] bg-slate-300 my-5'></div>
-
-      {/* Order Summary */}
+      {/* Order summary */}
       <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
         <FaShoppingCart /> Order summary
       </h2>
@@ -111,21 +109,29 @@ export const PlaceOrder = () => {
         <p>Subtotal</p>
         <p className='font-semibold'>{formatCurrency(subTotal)}</p>
       </div>
-      {/* Sale Tax */}
+      {/* Sale tax */}
       <div className='flex justify-between mb-4'>
         <p>Sale Tax (9%)</p>
         <p className='font-semibold'>{formatCurrency(tax)}</p>
       </div>
-      {/* Shipping */}
+
+      {/* Shipping cost */}
       <div className='flex justify-between mb-4'>
         <p>Shipping</p>
-        <p className='font-semibold'>{formatCurrency(0)}</p>
+        <div className='text-right'>
+          <p className='font-semibold'>{formatCurrency(shippingCost)}</p>
+          {itemsInCart > 0 && shippingCost === 0 && (
+            <p className='text-green-700 text-sm'>You qualify for free shipping!</p>
+          )}
+        </div>
       </div>
+
       {/* Total */}
       <div className='flex justify-between border-t border-slate-300 pt-4 mb-6'>
         <p className='text-lg font-bold'>Total</p>
         <p className='text-xl font-bold text-slate-800'>{formatCurrency(total)}</p>
       </div>
+
       {/* Terms and conditions */}
       <p className='text-sm text-slate-600 mb-5'>
         By clicking the button below, you agree to our{' '}
@@ -137,12 +143,14 @@ export const PlaceOrder = () => {
         </Link>
         .
       </p>
+
       {/* Error message */}
       {errorMessage && (
         <div className='text-sm bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded fade-in mb-4'>
           <p>{errorMessage}</p>
         </div>
       )}
+
       {/* Order button */}
       <div>
         <button
