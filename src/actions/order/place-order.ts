@@ -2,6 +2,7 @@
 import prisma from '@/lib/prisma';
 import type { Address, Size } from '@/interfaces';
 import { auth } from '@/auth';
+import { calculateShippingCost } from '@/utils';
 
 interface CartItem {
   productId: string;
@@ -9,8 +10,7 @@ interface CartItem {
   size: Size;
 }
 
-// Tax rate set to 9%
-const TAX_RATE = 0.09;
+const TAX_RATE = 0.09; // Tax rate (9%)
 
 export const placeOrder = async (cartItems: CartItem[], address: Address) => {
   // 1. Verify that the user is authenticated
@@ -24,7 +24,7 @@ export const placeOrder = async (cartItems: CartItem[], address: Address) => {
     };
   }
 
-  // 2. Retrieve products from the database based on cart items
+  // 2. Fetch product data from the database based on cart item IDs
   const dbProducts = await prisma.product.findMany({
     where: {
       id: {
@@ -33,85 +33,92 @@ export const placeOrder = async (cartItems: CartItem[], address: Address) => {
     },
   });
 
-  // 3. Compute order summary values
-  const itemsInOrder = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  // 3. Ensure all products exist
+  if (dbProducts.length !== cartItems.length) {
+    return {
+      ok: false,
+      message: 'Some products in your cart no longer exist.',
+    };
+  }
 
-  const { subtotal, tax, total } = cartItems.reduce(
-    (orderTotals, item) => {
-      const product = dbProducts.find(p => p.id === item.productId);
-      if (!product) throw new Error(`Product ${item.productId} not found`);
+  // 4. Check for any invalid (zero or negative) prices
+  const invalidProduct = dbProducts.find(p => p.price <= 0);
+  if (invalidProduct) {
+    return {
+      ok: false,
+      message: `Product "${invalidProduct.title}" has an invalid price.`,
+    };
+  }
 
-      const itemSubtotal = product.price * item.quantity;
-      orderTotals.subtotal += itemSubtotal;
-      orderTotals.tax += itemSubtotal * TAX_RATE;
-      orderTotals.total += itemSubtotal * (1 + TAX_RATE);
-      return orderTotals;
-    },
-    { subtotal: 0, tax: 0, total: 0 }
-  );
+  // 5. Calculate subtotal, tax and item count
+  let subtotal = 0;
+  let tax = 0;
+  let itemsInOrder = 0;
+
+  for (const item of cartItems) {
+    const product = dbProducts.find(p => p.id === item.productId)!;
+    const itemSubtotal = product.price * item.quantity;
+    subtotal += itemSubtotal;
+    tax += itemSubtotal * TAX_RATE;
+    itemsInOrder += item.quantity;
+  }
+
+  subtotal = Number(subtotal.toFixed(2));
+  tax = Number(tax.toFixed(2));
+
+  // 6. Calculate shipping and total
+  const totalBeforeShipping = subtotal + tax;
+  const shippingCost = itemsInOrder === 0 ? 0 : calculateShippingCost(subtotal);
+  const total = Number((totalBeforeShipping + shippingCost).toFixed(2));
 
   try {
+    // 7. Start Prisma transaction
     const transactionResult = await prisma.$transaction(async tx => {
-      // 4. Update product stock based on cart
-      const updatedProducts = await Promise.all(
-        dbProducts.map(async product => {
-          const quantityToDecrement = cartItems
-            .filter(item => item.productId === product.id)
-            .reduce((acc, item) => acc + item.quantity, 0);
+      // 8. Check stock and decrement in sequence
+      for (const product of dbProducts) {
+        const quantityToDecrement = cartItems
+          .filter(item => item.productId === product.id)
+          .reduce((acc, item) => acc + item.quantity, 0);
 
-          if (quantityToDecrement === 0) {
-            throw new Error(`Invalid quantity for product ${product.title}`);
-          }
+        if (quantityToDecrement > product.inStock) {
+          throw new Error(`${product.title} does not have enough stock.`);
+        }
 
-          const updatedProduct = await tx.product.update({
-            where: { id: product.id },
-            data: {
-              inStock: { decrement: quantityToDecrement },
-            },
-          });
-
-          if (updatedProduct.inStock < 0) {
-            throw new Error(`${updatedProduct.title} is out of stock`);
-          }
-
-          return updatedProduct;
-        })
-      );
-
-      // 5. Validate that all product prices are positive
-      const hasInvalidPrice = cartItems.some(item => {
-        const price = dbProducts.find(p => p.id === item.productId)?.price ?? 0;
-        return price <= 0;
-      });
-
-      if (hasInvalidPrice) {
-        throw new Error('One or more products have an invalid price');
+        await tx.product.update({
+          where: { id: product.id },
+          data: {
+            inStock: { decrement: quantityToDecrement },
+          },
+        });
       }
 
-      // 6. Create order with order items
+      // 9. Create order and associated items
       const order = await tx.order.create({
         data: {
           userId,
           itemsInOrder,
           subtotal,
           tax,
+          shippingCost,
           total,
           OrderItem: {
             createMany: {
-              data: cartItems.map(item => ({
-                quantity: item.quantity,
-                size: item.size,
-                productId: item.productId,
-                price: dbProducts.find(p => p.id === item.productId)?.price ?? 0,
-              })),
+              data: cartItems.map(item => {
+                const product = dbProducts.find(p => p.id === item.productId)!;
+                return {
+                  quantity: item.quantity,
+                  size: item.size,
+                  productId: item.productId,
+                  price: product.price,
+                };
+              }),
             },
           },
         },
       });
 
-      // 7. Store delivery address for the order
+      // 10. Create delivery address for the order
       const { country, ...addressFields } = address;
-
       const deliveryAddress = await tx.orderAddress.create({
         data: {
           ...addressFields,
@@ -121,23 +128,21 @@ export const placeOrder = async (cartItems: CartItem[], address: Address) => {
       });
 
       return {
-        updatedProducts,
         order,
         deliveryAddress,
       };
     });
 
+    // 11. Return success response
     return {
       ok: true,
       order: transactionResult.order,
-      transactionResult,
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unexpected error placing order';
+    // 12. Handle and return any transaction errors
     return {
       ok: false,
-      message: errorMessage,
+      message: error instanceof Error ? error.message : 'Unexpected error placing order.',
     };
   }
 };
