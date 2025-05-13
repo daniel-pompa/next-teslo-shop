@@ -43,15 +43,15 @@ interface SeedData {
 export const initialData: SeedData = {
   users: [
     {
-      name: 'Daniel Pompa',
+      name: 'Emma Ciambrino',
       email: 'admin@example.com',
-      password: brcyptjs.hashSync('123456', 10),
+      password: brcyptjs.hashSync('654321', 10),
       role: 'admin',
     },
     {
-      name: 'Emma Ciambrino',
+      name: 'Daniel Pompa',
       email: 'user@example.com',
-      password: brcyptjs.hashSync('654321', 10),
+      password: brcyptjs.hashSync('123456', 10),
       role: 'user',
     },
   ],
