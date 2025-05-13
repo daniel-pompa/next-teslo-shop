@@ -3,7 +3,7 @@ import Image from 'next/image';
 import clsx from 'clsx';
 import { IoCard } from 'react-icons/io5';
 import { FaMapMarkerAlt, FaShoppingCart } from 'react-icons/fa';
-import { Title } from '@/components';
+import { PaypalButton, Title } from '@/components';
 import { getOrderById } from '@/actions';
 import { calculateShippingCost, formatCurrency } from '@/utils';
 
@@ -73,6 +73,22 @@ export default async function OrderPage({ params }: Props) {
         </div>
         {/* Summary and delivery address section */}
         <div className='bg-slate-50 p-6 rounded-lg shadow-md h-fit'>
+          {/* Payment status */}
+          <div className='mb-8'>
+            <div
+              className={clsx(
+                'flex w-full justify-center items-center gap-2 mt-2 py-3 px-4 font-bold text-white rounded',
+                {
+                  'bg-green-600': order.isPaid,
+                  'bg-red-600': !order.isPaid,
+                }
+              )}
+            >
+              <IoCard size={20} />
+              <span>Payment Status: {order.isPaid ? 'Paid' : 'Not paid'}</span>
+            </div>
+          </div>
+          {/* Delivery address */}
           <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
             <FaMapMarkerAlt /> Delivery address
           </h2>
@@ -142,21 +158,8 @@ export default async function OrderPage({ params }: Props) {
             </p>
           </div>
 
-          {/* Payment status */}
-          <div className='flex items-center justify-center sm:justify-start mb-8'>
-            <div
-              className={clsx(
-                'flex w-full items-center gap-2 py-2 px-4 text-sm font-bold text-white rounded',
-                {
-                  'bg-green-600': order.isPaid,
-                  'bg-red-600': !order.isPaid,
-                }
-              )}
-            >
-              <IoCard size={20} />
-              <span>Payment Status: {order.isPaid ? 'Paid' : 'Not paid'}</span>
-            </div>
-          </div>
+          {/* Paypal button */}
+          <PaypalButton />
         </div>
       </div>
     </>
