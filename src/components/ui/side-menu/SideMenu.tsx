@@ -91,7 +91,7 @@ export const SideMenu = () => {
               <span>Sign in</span>
             </Link>
           )}
-
+          {/* User section */}
           {isAuthenticated && (
             <>
               <Link
@@ -103,7 +103,8 @@ export const SideMenu = () => {
                 <span>Profile</span>
               </Link>
               <Link
-                href='/'
+                href='/orders'
+                onClick={closeSideMenu}
                 className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
               >
                 <IoCart size={24} className='text-slate-700 mr-2' />
@@ -119,7 +120,6 @@ export const SideMenu = () => {
               </Link>
             </>
           )}
-
           {/* Admin section */}
           {isAdmin && (
             <>

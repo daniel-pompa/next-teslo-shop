@@ -1,76 +1,82 @@
-import { Title } from '@/components';
 import Link from 'next/link';
-import { IoCard } from 'react-icons/io5';
+import { redirect } from 'next/navigation';
+import { IoCardOutline } from 'react-icons/io5';
+import { getOrdersByUser } from '@/actions';
+import { Title, Pagination } from '@/components';
+import { formatCurrency, formatDate } from '@/utils';
 
-export default function OrdersPage() {
+interface Props {
+  searchParams: Promise<{ page: string }>;
+}
+
+export default async function OrdersPage({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
+  const currentPage = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
+
+  const { ok, orders = [], totalPages = 1 } = await getOrdersByUser(currentPage);
+
+  if (!ok) redirect('/auth/sign-in');
+
   return (
-    <div className='container mx-auto px-4 py-8'>
-      {/* Title */}
-      <Title title='Orders' subtitle='Manage and review your orders' />
-      {/* Orders Table */}
-      <div className='mb-10 overflow-x-auto'>
-        <table className='min-w-full bg-white border border-slate-200 rounded-md overflow-hidden text-sm sm:text-base text-slate-600 text-center'>
-          {/* Table Header */}
-          <thead className='bg-slate-100 font-medium text-slate-700'>
-            <tr>
-              <th scope='col' className='px-6 py-4'>
-                #ID
-              </th>
-              <th scope='col' className='px-6 py-4'>
-                Name
-              </th>
-              <th scope='col' className='px-6 py-4'>
-                Status
-              </th>
-              <th scope='col' className='px-6 py-4'>
-                Options
-              </th>
-            </tr>
-          </thead>
-          {/* Table Body */}
-          <tbody>
-            {/* Order 1: Paid */}
-            <tr className='bg-white border-b transition duration-300 ease-in-out hover:bg-slate-50'>
-              <td className='px-6 py-4 whitespace-nowrap font-medium text-slate-900'>
-                1
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>Mark</td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <div className='flex items-center justify-center text-green-600'>
-                  <IoCard />
-                  <span className='ml-2'>Paid</span>
-                </div>
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <Link href='/orders/123' className='text-blue-600 hover:underline'>
-                  View order
-                </Link>
-              </td>
-            </tr>
-            {/* Order 2: Not Paid */}
-            <tr className='bg-white border-b transition duration-300 ease-in-out hover:bg-slate-50'>
-              <td className='px-6 py-4 whitespace-nowrap font-medium text-slate-900'>
-                2
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>John</td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <div className='flex items-center justify-center text-red-600'>
-                  <IoCard />
-                  <span className='ml-2'>Not paid</span>
-                </div>
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <Link
-                  href='/orders/019525a5-6653-7038-a0a3-7526023e25c5'
-                  className='text-blue-600 hover:underline'
-                >
-                  View order
-                </Link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div className='container mx-auto'>
+      <Title title='Orders' subtitle='Review your orders' />
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
+        {orders.map(order => (
+          <div key={order.id} className='bg-white rounded-md shadow p-5 border'>
+            <div className='flex justify-between items-center mb-3'>
+              <h3 className='text-lg font-semibold'>#{order.id.split('-').at(-1)}</h3>
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center 
+                ${
+                  order.isPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}
+              >
+                <IoCardOutline className='mr-1 size-4' />
+                {order.isPaid ? 'Paid' : 'Not paid'}
+              </span>
+            </div>
+
+            <div className='flex flex-col gap-2 mb-4 text-sm'>
+              <p>
+                <span className='font-bold'>Name:</span>{' '}
+                <span>
+                  {order.OrderAddress?.firstName} {order.OrderAddress?.lastName}
+                </span>
+              </p>
+              <p>
+                <span className='font-bold'>Items:</span>{' '}
+                <span>{order.itemsInOrder}</span>
+              </p>
+              <p>
+                <span className='font-bold'>Total:</span>{' '}
+                <span>{formatCurrency(order.total)}</span>
+              </p>
+              <p>
+                <span className='font-bold'>Shipping:</span>{' '}
+                <span>
+                  {order.shippingCost === 0
+                    ? 'Free'
+                    : `${formatCurrency(order.shippingCost)}`}
+                </span>
+              </p>
+              <p>
+                <span className='font-bold'>Date:</span>{' '}
+                <span>{formatDate(order.createdAt, 'en-US', 'long', true)}</span>
+              </p>
+            </div>
+
+            <Link
+              href={`/orders/${order.id}`}
+              className='inline-block w-full sm:w-auto bg-blue-600 text-white text-sm text-center px-3 py-1 rounded hover:bg-blue-700 transition mt-2'
+            >
+              View order
+            </Link>
+          </div>
+        ))}
       </div>
+
+      {totalPages > 1 && <Pagination totalPages={totalPages} />}
     </div>
   );
 }
