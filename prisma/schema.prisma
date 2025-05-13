@@ -102,20 +102,21 @@ model UserAddress {
 }
 
 model Order {
-  id           String        @id @default(uuid())
-  subtotal     Float
-  tax          Float
-  total        Float
-  shippingCost Float         @default(0)
-  itemsInOrder Int
-  isPaid       Boolean       @default(false)
-  paidAt       DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  user         User          @relation(fields: [userId], references: [id])
-  userId       String
-  OrderItem    OrderItem[]
-  OrderAddress OrderAddress?
+  id            String        @id @default(uuid())
+  subtotal      Float
+  tax           Float
+  total         Float
+  shippingCost  Float         @default(0)
+  itemsInOrder  Int
+  isPaid        Boolean       @default(false)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  OrderItem     OrderItem[]
+  OrderAddress  OrderAddress?
+  transactionId String? // Identifier returned by the external payment provider (e.g. PayPal, Stripe)
 }
 
 model OrderItem {
