@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
-import clsx from 'clsx';
-import { IoCard } from 'react-icons/io5';
 import { FaMapMarkerAlt, FaShoppingCart } from 'react-icons/fa';
-import { PaypalButton, Title } from '@/components';
+import { OrderStatus, PaypalButton, Title } from '@/components';
 import { getOrderById } from '@/actions';
 import { calculateShippingCost, formatCurrency } from '@/utils';
 
@@ -73,21 +71,7 @@ export default async function OrderPage({ params }: Props) {
         </div>
         {/* Summary and delivery address section */}
         <div className='bg-slate-50 p-6 rounded-lg shadow-md h-fit'>
-          {/* Payment status */}
-          <div className='mb-8'>
-            <div
-              className={clsx(
-                'flex w-full justify-center items-center gap-2 mt-2 py-3 px-4 font-bold text-white rounded',
-                {
-                  'bg-green-600': order.isPaid,
-                  'bg-red-600': !order.isPaid,
-                }
-              )}
-            >
-              <IoCard size={20} />
-              <span>Payment Status: {order.isPaid ? 'Paid' : 'Not paid'}</span>
-            </div>
-          </div>
+          {!order.isPaid && <OrderStatus isPaid={order.isPaid} />}
           {/* Delivery address */}
           <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
             <FaMapMarkerAlt /> Delivery address
@@ -119,28 +103,22 @@ export default async function OrderPage({ params }: Props) {
               <span className='font-bold'>Phone:</span> {deliveryAddress.phone}
             </p>
           </div>
-
           <div className='w-full h-[1px] bg-slate-300 my-5' />
-
           <h2 className='font-bold text-xl mb-6 flex items-center gap-2'>
             <FaShoppingCart /> Order summary
           </h2>
-
           <div className='flex justify-between mb-4'>
             <p>Items</p>
             <p className='font-semibold'>{order.itemsInOrder}</p>
           </div>
-
           <div className='flex justify-between mb-4'>
             <p>Subtotal</p>
             <p className='font-semibold'>{formatCurrency(order.subtotal)}</p>
           </div>
-
           <div className='flex justify-between mb-4'>
             <p>Sale Tax (9%)</p>
             <p className='font-semibold'>{formatCurrency(order.tax)}</p>
           </div>
-
           <div className='flex justify-between mb-4'>
             <p>Shipping</p>
             <div className='text-right'>
@@ -150,16 +128,17 @@ export default async function OrderPage({ params }: Props) {
               )}
             </div>
           </div>
-
           <div className='flex justify-between border-t border-slate-300 pt-4 mb-6'>
             <p className='text-lg font-bold'>Total</p>
             <p className='text-xl font-bold text-slate-800'>
               {formatCurrency(order.total)}
             </p>
           </div>
-
-          {/* Paypal button */}
-          <PaypalButton />
+          {order.isPaid ? (
+            <OrderStatus isPaid={order.isPaid} />
+          ) : (
+            <PaypalButton orderId={order.id} amount={order.total} />
+          )}
         </div>
       </div>
     </>
