@@ -73,7 +73,7 @@ export default async function ProfilePage() {
               {/* Personal Info */}
               <div>
                 <h4 className='font-medium mb-6'>Personal information</h4>
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <div className='flex flex-col md:flex-row gap-6'>
                   <InfoField
                     icon={<IoPerson className='h-5 w-5 text-blue-600' />}
                     label='Name'
