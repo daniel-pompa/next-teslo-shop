@@ -47,7 +47,7 @@ export default async function GenderPage({ params, searchParams }: Props) {
     <>
       <Title title={title} subtitle={subtitle} />
       <ProductGrid products={products} />
-      <Pagination totalPages={totalPages} />
+      {totalPages > 1 && <Pagination totalPages={totalPages} />}
     </>
   );
 }
