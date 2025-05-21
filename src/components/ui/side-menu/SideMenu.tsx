@@ -132,7 +132,8 @@ export const SideMenu = () => {
                 <span>Products</span>
               </Link>
               <Link
-                href='/'
+                href='/admin/orders'
+                onClick={closeSideMenu}
                 className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
               >
                 <IoCart size={24} className='text-slate-700 mr-2' />

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { IoCardOutline } from 'react-icons/io5';
-import { getOrdersByUser } from '@/actions';
+import { getOrders } from '@/actions';
 import { Title, Pagination } from '@/components';
 import { formatCurrency, formatDate } from '@/utils';
 
@@ -13,27 +13,29 @@ export default async function OrdersPage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
   const currentPage = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
 
-  const { ok, orders = [], totalPages = 1 } = await getOrdersByUser(currentPage);
+  const {
+    ok,
+    orders = [],
+    totalPages = 1,
+    totalCount = 0,
+  } = await getOrders(currentPage);
 
   if (!ok) redirect('/auth/sign-in');
 
+  const subtitle =
+    totalCount === 0
+      ? 'No orders found in the database.'
+      : `Total orders in database: ${totalCount.toLocaleString()}`;
+
   return (
     <div className='container mx-auto'>
-      <Title
-        title='Orders'
-        subtitle={orders.length === 0 ? 'You have no orders yet.' : 'Review your orders.'}
-      />
+      <Title title='All orders' subtitle={subtitle} />
 
       {orders.length === 0 ? (
-        <div className='flex flex-col'>
-          <p className='mb-6'>
-            Looks like you haven&#39;t placed any orders yet. When you do, they&#39;ll
-            appear here.
-          </p>
-          <Link href='/' className='btn-primary w-full sm:w-fit text-center text-sm'>
-            Start shopping
-          </Link>
-        </div>
+        <p>
+          There are currently no orders in the system. Once users place orders,
+          they&#39;ll appear here.
+        </p>
       ) : (
         <>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
