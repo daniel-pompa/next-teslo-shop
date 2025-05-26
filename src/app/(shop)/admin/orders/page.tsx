@@ -24,8 +24,8 @@ export default async function OrdersPage({ searchParams }: Props) {
 
   const subtitle =
     totalCount === 0
-      ? 'No orders found in the database.'
-      : `Total orders in database: ${totalCount.toLocaleString()}`;
+      ? 'No orders recorded in the system'
+      : `System order volume: ${totalCount.toLocaleString()}`;
 
   return (
     <div className='container mx-auto'>
@@ -40,7 +40,7 @@ export default async function OrdersPage({ searchParams }: Props) {
         <>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
             {orders.map(order => (
-              <div key={order.id} className='bg-white rounded-md shadow p-5 border'>
+              <div key={order.id} className='rounded-md shadow p-5 border'>
                 <div className='flex justify-between items-center mb-3'>
                   <h3 className='text-lg font-semibold'>#{order.id.split('-').at(-1)}</h3>
                   <span

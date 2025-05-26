@@ -125,11 +125,12 @@ export const SideMenu = () => {
             <>
               <div className='w-full h-[1px] bg-slate-200 my-5'></div>
               <Link
-                href='/'
+                href='/admin/users'
+                onClick={closeSideMenu}
                 className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
               >
-                <IoShirt size={24} className='text-slate-700 mr-2' />
-                <span>Products</span>
+                <IoPeople size={24} className='text-slate-700 mr-2' />
+                <span>Users</span>
               </Link>
               <Link
                 href='/admin/orders'
@@ -143,8 +144,8 @@ export const SideMenu = () => {
                 href='/'
                 className='flex items-center p-2 hover:bg-slate-50 rounded transition-all'
               >
-                <IoPeople size={24} className='text-slate-700 mr-2' />
-                <span>Customers</span>
+                <IoShirt size={24} className='text-slate-700 mr-2' />
+                <span>Products</span>
               </Link>
             </>
           )}
