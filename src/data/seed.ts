@@ -658,7 +658,7 @@ export const initialData: SeedData = {
       slug: 'cybertruck_graffiti_hoodie',
       type: 'hoodies',
       tags: ['hoodie'],
-      title: 'cybertruck graffiti hoodie',
+      title: 'Cybertruck graffiti hoodie',
       gender: 'unisex',
     },
     {
