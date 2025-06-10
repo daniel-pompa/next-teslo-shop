@@ -14,7 +14,7 @@ export const VALID_COLORS = [
   '#1d4ed8',
 ] as const;
 
-export type Category = 'men' | 'women' | 'kid' | 'unisex';
+export type Gender = 'men' | 'women' | 'kid' | 'unisex';
 export type Size = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
 export type ProductType = 'shirts' | 'pants' | 'hoodies' | 'hats';
 
@@ -38,7 +38,7 @@ export interface Product {
   slug: string;
   tags: string[];
   title: string;
-  gender: Category;
+  gender: Gender;
   categoryId: string;
 }
 

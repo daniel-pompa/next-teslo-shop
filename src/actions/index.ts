@@ -4,6 +4,7 @@ export * from './address/set-user-address';
 export * from './auth/sign-in';
 export * from './auth/sign-out';
 export * from './auth/sign-up';
+export * from './category/get-categories';
 export * from './country/get-countries';
 export * from './order/get-order-by-id';
 export * from './order/get-orders-by-user';
