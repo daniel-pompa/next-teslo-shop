@@ -53,6 +53,12 @@ export interface CartProduct {
   image: string;
 }
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  productId: string;
+}
+
 /**
  * Type guard: Validates if a given string is a valid Color.
  * - The `as Color` cast is safe because VALID_COLORS_SET only contains valid colors.
