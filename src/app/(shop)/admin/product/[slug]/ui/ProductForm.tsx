@@ -7,7 +7,7 @@ import { Category, Product, ProductImage } from '@/interfaces';
 import { createUpdateProduct } from '@/actions';
 
 interface Props {
-  product: Product & { ProductImage?: ProductImage[] };
+  product: Partial<Product> & { ProductImage?: ProductImage[] };
   categories: Category[];
 }
 
@@ -18,12 +18,25 @@ interface FormInputs {
   price: number;
   inStock: number;
   sizes: string[];
+  colors: string[];
   tags: string;
   gender: 'men' | 'women' | 'kid' | 'unisex';
   categoryId: string;
 }
 
 const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+const colors = [
+  '#0f172a',
+  '#334155',
+  '#64748b',
+  '#ffffff',
+  '#1e3a8a',
+  '#b91c1c',
+  '#15803d',
+  '#ea580c',
+  '#1d4ed8',
+];
 
 export const ProductForm = ({ product, categories }: Props) => {
   const {
@@ -36,24 +49,31 @@ export const ProductForm = ({ product, categories }: Props) => {
   } = useForm<FormInputs>({
     defaultValues: {
       ...product,
-      tags: product.tags.join(', '),
+      tags: product.tags?.join(', '),
+      sizes: product.sizes ?? [],
+      colors: product.colors ?? [],
     },
   });
 
   watch('sizes');
+  watch('colors');
 
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData();
 
     const { ...productToSave } = data;
 
-    formData.append('id', product.id ?? '');
+    if (product.id) {
+      formData.append('id', product.id ?? '');
+    }
+
     formData.append('title', productToSave.title);
     formData.append('slug', productToSave.slug);
     formData.append('description', productToSave.description);
     formData.append('price', productToSave.price.toString());
     formData.append('inStock', productToSave.inStock.toString());
     formData.append('sizes', productToSave.sizes.toString());
+    formData.append('colors', productToSave.colors.toString());
     formData.append('tags', productToSave.tags);
     formData.append('gender', productToSave.gender);
     formData.append('categoryId', productToSave.categoryId);
@@ -68,13 +88,23 @@ export const ProductForm = ({ product, categories }: Props) => {
   };
 
   function handleSizeClick(size: string): void {
-    const sizes = new Set(getValues('sizes'));
-    if (sizes.has(size)) {
-      sizes.delete(size);
+    const selectedSizes = new Set(getValues('sizes'));
+    if (selectedSizes.has(size)) {
+      selectedSizes.delete(size);
     } else {
-      sizes.add(size);
+      selectedSizes.add(size);
     }
-    setValue('sizes', Array.from(sizes));
+    setValue('sizes', Array.from(selectedSizes));
+  }
+
+  function handleColorClick(color: string): void {
+    const selectedColors = new Set(getValues('colors'));
+    if (selectedColors.has(color)) {
+      selectedColors.delete(color);
+    } else {
+      selectedColors.add(color);
+    }
+    setValue('colors', Array.from(selectedColors));
   }
 
   return (
@@ -138,6 +168,7 @@ export const ProductForm = ({ product, categories }: Props) => {
                 className='pl-6 pr-4 py-2 w-full border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
                 placeholder='0.00'
                 step='0.01'
+                min='0'
                 aria-label='Product price'
                 {...register('price', { required: true, min: 0 })}
               />
@@ -160,7 +191,7 @@ export const ProductForm = ({ product, categories }: Props) => {
         </div>
 
         {/* Right Column - Selectors */}
-        <div className='space-y-4'>
+        <div className='space-y-5'>
           <div className='flex flex-col'>
             <label htmlFor='gender' className='font-medium text-slate-700 mb-1'>
               Gender
@@ -198,11 +229,25 @@ export const ProductForm = ({ product, categories }: Props) => {
             </select>
           </div>
 
+          <div>
+            <label htmlFor='inStock' className='font-medium text-slate-700 mb-1'>
+              Stock
+            </label>
+            <input
+              id='inStock'
+              type='number'
+              className='p-2 w-full border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
+              placeholder='0'
+              min='0'
+              aria-label='Stock quantity'
+              {...register('inStock', { required: true, min: 0 })}
+            />
+          </div>
+
           <div className='flex flex-col'>
             <label className='font-medium text-slate-700 mb-1'>Sizes</label>
             <div className='flex flex-wrap gap-2'>
               {sizes.map(size => (
-                // bg-blue-500 text-white <--- si está seleccionado
                 <div
                   key={size}
                   onClick={() => handleSizeClick(size)}
@@ -215,6 +260,26 @@ export const ProductForm = ({ product, categories }: Props) => {
                 >
                   <span>{size}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          <div className='flex flex-col'>
+            <label className='font-medium text-slate-700 mb-1'>Colors</label>
+            <div className='flex flex-wrap gap-2'>
+              {colors.map(color => (
+                <div
+                  key={color}
+                  onClick={() => handleColorClick(color)}
+                  className={clsx(
+                    'w-10 h-10 rounded-full border cursor-pointer transition-all',
+                    {
+                      'ring-2 ring-offset-2 ring-blue-600':
+                        getValues('colors').includes(color),
+                    }
+                  )}
+                  style={{ backgroundColor: color }}
+                ></div>
               ))}
             </div>
           </div>
@@ -253,7 +318,7 @@ export const ProductForm = ({ product, categories }: Props) => {
                 >
                   <Image
                     src={`/products/${image.url}`}
-                    alt={product.title}
+                    alt={product.title ?? 'Product image'}
                     width={300}
                     height={300}
                     className='w-full object-cover rounded-t'
@@ -270,7 +335,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
-          <div className='pt-4'>
+          <div className={product.ProductImage?.length ? 'pt-4' : 'pt-1'}>
             <button
               type='submit'
               className='btn-primary flex items-center justify-center gap-2 w-full'

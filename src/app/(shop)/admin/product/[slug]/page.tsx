@@ -17,9 +17,9 @@ export default async function ProductPage({ params }: Props) {
     getCategories(),
   ]);
 
-  if (!product) redirect('/admin/products');
+  if (!product && slug !== 'new-product') redirect('/admin/products');
 
-  const title = slug === 'new-product' ? 'Create Product' : `Editing: ${product.title}`;
+  const title = slug === 'new-product' ? 'Create Product' : `Editing: ${product?.title}`;
 
   const subtitle =
     slug === 'new-product'
@@ -29,7 +29,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <div className='w-full max-w-5xl mx-auto'>
       <Title title={title} subtitle={subtitle} />
-      <ProductForm product={product} categories={categories} />
+      <ProductForm product={product ?? {}} categories={categories} />
     </div>
   );
 }

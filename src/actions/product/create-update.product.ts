@@ -1,6 +1,8 @@
 'use server';
-import { Gender } from '@prisma/client';
+import { Gender, Product, Size } from '@prisma/client';
 import { z } from 'zod';
+import prisma from '@/lib/prisma';
+import { Color } from '@/interfaces';
 
 const productSchema = z.object({
   id: z.string().uuid().optional().nullable(),
@@ -16,6 +18,7 @@ const productSchema = z.object({
     .min(0)
     .transform(value => Number(value.toFixed(0))),
   sizes: z.coerce.string().transform(value => value.split(',')),
+  colors: z.coerce.string().transform(value => value.split(',')),
   tags: z.string(),
   gender: z.nativeEnum(Gender),
   categoryId: z.string().uuid(),
@@ -29,7 +32,53 @@ export const createUpdateProduct = async (formData: FormData) => {
     return { ok: false, message: productParsed.error.message };
   }
 
-  console.log(productParsed.data);
+  const product = productParsed.data;
+
+  product.slug = product.slug.toLowerCase().replace(/ /g, '-').trim();
+
+  const { id, ...rest } = product;
+
+  const prismaTx = await prisma.$transaction(async tx => {
+    let product: Product;
+    const tagsArray = rest.tags.split(',').map(tag => tag.trim().toLowerCase());
+
+    if (id) {
+      // Update product
+      product = await prisma.product.update({
+        where: { id },
+        data: {
+          ...rest,
+          sizes: {
+            set: rest.sizes as Size[],
+          },
+          colors: rest.colors as Color[],
+          tags: {
+            set: tagsArray,
+          },
+        },
+      });
+    } else {
+      // Create product
+      product = await prisma.product.create({
+        data: {
+          ...rest,
+          sizes: {
+            set: rest.sizes as Size[],
+          },
+          colors: rest.colors as Color[],
+          tags: {
+            set: tagsArray,
+          },
+        },
+      });
+    }
+
+    console.log({ product });
+
+    return product;
+  });
+
+  // TODO: Revalidate paths
 
   return { ok: true };
 };
