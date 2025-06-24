@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { FiPlus } from 'react-icons/fi';
 import { getPaginatedProductsWithImages } from '@/actions';
-import { Title, Pagination } from '@/components';
+import { Title, Pagination, ProductImage } from '@/components';
 import { formatCurrency } from '@/utils';
 
 interface Props {
@@ -52,8 +51,8 @@ export default async function ProductsPage({ searchParams }: Props) {
             </div>
 
             <Link href={`/product/${product.slug}`} className='block'>
-              <Image
-                src={`/products/${product.ProductImage[0].url}`}
+              <ProductImage
+                src={product.ProductImage[0]?.url}
                 alt={product.title}
                 width={300}
                 height={300}

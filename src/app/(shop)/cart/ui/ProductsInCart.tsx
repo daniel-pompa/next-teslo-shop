@@ -1,10 +1,9 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 import { FaTrash } from 'react-icons/fa';
 import { useCartStore } from '@/store';
 import { formatCurrency } from '@/utils';
-import { QuantitySelector } from '@/components';
+import { ProductImage, QuantitySelector } from '@/components';
 
 export const ProductsInCart = () => {
   const productsInCart = useCartStore(state => state.cart);
@@ -28,12 +27,11 @@ export const ProductsInCart = () => {
           </button>
           {/* Product image */}
           <div className='flex-shrink-0'>
-            <Image
-              src={`/products/${product.image}`}
+            <ProductImage
+              src={product.image}
               alt={product.title}
               width={176}
               height={176}
-              priority
               className='rounded-lg w-44 h-44 object-cover'
             />
           </div>

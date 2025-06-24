@@ -1,17 +1,14 @@
 'use client';
 import { useState } from 'react';
-import Image from 'next/image';
-
 import { Swiper as SwiperObject } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, FreeMode, Navigation, Thumbs } from 'swiper/modules';
-
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-
 import './slideshow.css';
+import { ProductImage } from '@/components';
 
 interface Props {
   images: string[];
@@ -21,6 +18,7 @@ interface Props {
 
 export const ProductSlideshow = ({ images, title, className }: Props) => {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperObject>();
+  const validImages = images.length > 0 ? images : [''];
 
   return (
     <div className={className}>
@@ -39,18 +37,13 @@ export const ProductSlideshow = ({ images, title, className }: Props) => {
         modules={[FreeMode, Navigation, Thumbs, Autoplay]}
         className='mySwiper2'
       >
-        {images.map(image => (
-          <SwiperSlide key={image}>
-            <Image
-              src={`/products/${image}`}
-              alt={title}
-              width={1024}
-              height={800}
-              priority
-            />
+        {validImages.map((image, index) => (
+          <SwiperSlide key={image + index}>
+            <ProductImage src={image} alt={title} width={1024} height={800} />
           </SwiperSlide>
         ))}
       </Swiper>
+
       {/* Thumbnails */}
       <Swiper
         onSwiper={setThumbsSwiper}
@@ -61,14 +54,14 @@ export const ProductSlideshow = ({ images, title, className }: Props) => {
         modules={[FreeMode, Navigation, Thumbs]}
         className='mySwiper'
       >
-        {images.map(image => (
-          <SwiperSlide key={image}>
-            <Image
-              src={`/products/${image}`}
+        {validImages.map((image, index) => (
+          <SwiperSlide key={image + index}>
+            <ProductImage
+              src={image}
               alt={title}
               width={300}
               height={300}
-              priority
+              className='cursor-pointer'
             />
           </SwiperSlide>
         ))}
