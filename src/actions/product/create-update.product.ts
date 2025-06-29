@@ -3,6 +3,7 @@ import { Gender, Product, Size } from '@prisma/client';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { Color } from '@/interfaces';
+import { revalidatePath } from 'next/cache';
 
 const productSchema = z.object({
   id: z.string().uuid().optional().nullable(),
@@ -38,47 +39,55 @@ export const createUpdateProduct = async (formData: FormData) => {
 
   const { id, ...rest } = product;
 
-  const prismaTx = await prisma.$transaction(async tx => {
-    let product: Product;
-    const tagsArray = rest.tags.split(',').map(tag => tag.trim().toLowerCase());
+  try {
+    const prismaTx = await prisma.$transaction(async tx => {
+      let product: Product;
+      const tagsArray = rest.tags.split(',').map(tag => tag.trim().toLowerCase());
 
-    if (id) {
-      // Update product
-      product = await prisma.product.update({
-        where: { id },
-        data: {
-          ...rest,
-          sizes: {
-            set: rest.sizes as Size[],
+      if (id) {
+        // Update product
+        product = await tx.product.update({
+          where: { id },
+          data: {
+            ...rest,
+            sizes: {
+              set: rest.sizes as Size[],
+            },
+            colors: rest.colors as Color[],
+            tags: {
+              set: tagsArray,
+            },
           },
-          colors: rest.colors as Color[],
-          tags: {
-            set: tagsArray,
+        });
+      } else {
+        // Create product
+        product = await tx.product.create({
+          data: {
+            ...rest,
+            sizes: {
+              set: rest.sizes as Size[],
+            },
+            colors: rest.colors as Color[],
+            tags: {
+              set: tagsArray,
+            },
           },
-        },
-      });
-    } else {
-      // Create product
-      product = await prisma.product.create({
-        data: {
-          ...rest,
-          sizes: {
-            set: rest.sizes as Size[],
-          },
-          colors: rest.colors as Color[],
-          tags: {
-            set: tagsArray,
-          },
-        },
-      });
+        });
+      }
+
+      return { product };
+    });
+
+    // Revalidate paths
+    revalidatePath('/admin/products');
+    revalidatePath(`/admin/products/${product.slug}`);
+    revalidatePath(`/products/${product.slug}`);
+
+    return { ok: true, product: prismaTx.product };
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[CREATE_UPDATE_PRODUCT_ERROR]', error);
     }
-
-    console.log({ product });
-
-    return product;
-  });
-
-  // TODO: Revalidate paths
-
-  return { ok: true };
+    return { ok: false, message: 'Error creating/updating product' };
+  }
 };

@@ -24,7 +24,7 @@ export default async function ProductsPage({ searchParams }: Props) {
           <Title title='Product catalog' subtitle='Manage your inventory' />
         </div>
         <Link
-          href='/admin/product/new-product'
+          href='/admin/product/new'
           className='btn-primary flex items-center justify-center gap-2 transition-all'
         >
           <FiPlus className='text-lg' />

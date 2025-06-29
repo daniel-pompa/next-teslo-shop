@@ -1,10 +1,12 @@
 'use client';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { FaImage, FaTrash } from 'react-icons/fa';
 import clsx from 'clsx';
 import { Category, Product, ProductImage } from '@/interfaces';
 import { createUpdateProduct } from '@/actions';
+import { toast } from 'react-hot-toast'; // 🔔 Importación del toast
 
 interface Props {
   product: Partial<Product> & { ProductImage?: ProductImage[] };
@@ -39,6 +41,8 @@ const colors = [
 ];
 
 export const ProductForm = ({ product, categories }: Props) => {
+  const router = useRouter();
+
   const {
     register,
     formState: { isValid },
@@ -78,13 +82,24 @@ export const ProductForm = ({ product, categories }: Props) => {
     formData.append('gender', productToSave.gender);
     formData.append('categoryId', productToSave.categoryId);
 
-    const { ok } = await createUpdateProduct(formData);
+    const savingToast = toast.loading('Saving product...');
+    console.log(savingToast);
 
-    if (ok) {
-      alert('Product saved successfully');
+    try {
+      const { ok, product: updatedProduct } = await createUpdateProduct(formData);
+
+      if (ok) {
+        toast.success('Product saved successfully', { id: savingToast, duration: 2000 });
+        router.replace(`/admin/product/${updatedProduct?.slug}`);
+      } else {
+        toast.error('Error saving product', { id: savingToast, duration: 2000 });
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[CREATE_UPDATE_PRODUCT_ERROR]', error);
+      }
+      toast.error('Unexpected error', { id: savingToast, duration: 2000 });
     }
-
-    console.log({ ok });
   };
 
   function handleSizeClick(size: string): void {
@@ -112,6 +127,7 @@ export const ProductForm = ({ product, categories }: Props) => {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Left Column - Text Fields */}
         <div className='space-y-4'>
+          {/* Title */}
           <div className='flex flex-col'>
             <label htmlFor='title' className='font-medium text-slate-700 mb-1'>
               Title
@@ -126,6 +142,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             />
           </div>
 
+          {/* Slug */}
           <div className='flex flex-col'>
             <label htmlFor='slug' className='font-medium text-slate-700 mb-1'>
               Slug
@@ -134,12 +151,13 @@ export const ProductForm = ({ product, categories }: Props) => {
               id='slug'
               type='text'
               className='p-2 border rounded border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400'
-              placeholder='product-name'
+              placeholder='product_slug'
               aria-label='Product slug (URL identifier)'
               {...register('slug', { required: true })}
             />
           </div>
 
+          {/* Description */}
           <div className='flex flex-col'>
             <label htmlFor='description' className='font-medium text-slate-700 mb-1'>
               Description
@@ -154,6 +172,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             />
           </div>
 
+          {/* Price */}
           <div className='flex flex-col'>
             <label htmlFor='price' className='font-medium text-slate-700 mb-1'>
               Price
@@ -175,6 +194,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
+          {/* Tags */}
           <div className='flex flex-col'>
             <label htmlFor='tags' className='font-medium text-slate-700 mb-1'>
               Tags
@@ -192,6 +212,7 @@ export const ProductForm = ({ product, categories }: Props) => {
 
         {/* Right Column - Selectors */}
         <div className='space-y-5'>
+          {/* Gender */}
           <div className='flex flex-col'>
             <label htmlFor='gender' className='font-medium text-slate-700 mb-1'>
               Gender
@@ -210,6 +231,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </select>
           </div>
 
+          {/* Category */}
           <div className='flex flex-col'>
             <label htmlFor='category' className='font-medium text-slate-700 mb-1'>
               Category
@@ -229,6 +251,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </select>
           </div>
 
+          {/* Stock */}
           <div>
             <label htmlFor='inStock' className='font-medium text-slate-700 mb-1'>
               Stock
@@ -244,6 +267,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             />
           </div>
 
+          {/* Sizes */}
           <div className='flex flex-col'>
             <label className='font-medium text-slate-700 mb-1'>Sizes</label>
             <div className='flex flex-wrap gap-2'>
@@ -264,6 +288,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
+          {/* Colors */}
           <div className='flex flex-col'>
             <label className='font-medium text-slate-700 mb-1'>Colors</label>
             <div className='flex flex-wrap gap-2'>
@@ -284,6 +309,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
+          {/* Images */}
           <div className='flex flex-col'>
             <label htmlFor='product-images' className='font-medium text-slate-700 mb-2'>
               Images
@@ -335,10 +361,17 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
+          {/* Submit Button */}
           <div className={product.ProductImage?.length ? 'pt-4' : 'pt-1'}>
             <button
               type='submit'
-              className='btn-primary flex items-center justify-center gap-2 w-full'
+              disabled={!isValid}
+              className={clsx(
+                'btn-primary flex items-center justify-center gap-2 w-full',
+                {
+                  'opacity-50 cursor-not-allowed': !isValid,
+                }
+              )}
               aria-label='Save product information'
             >
               Save product

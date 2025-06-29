@@ -17,9 +17,9 @@ export default async function ProductPage({ params }: Props) {
     getCategories(),
   ]);
 
-  if (!product && slug !== 'new-product') redirect('/admin/products');
+  if (!product && slug !== 'new') redirect('/admin/products');
 
-  const title = slug === 'new-product' ? 'Create Product' : `Editing: ${product?.title}`;
+  const title = slug === 'new' ? 'Create Product' : `Editing: ${product?.title}`;
 
   const subtitle =
     slug === 'new-product'
