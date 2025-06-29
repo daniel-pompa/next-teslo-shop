@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Toaster } from 'react-hot-toast';
 import { font } from '@/config/fonts';
 import './globals.css';
 import { Providers } from '@/components';
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={`flex flex-col min-h-screen ${font.className} antialiased`}>
         <Providers>{children}</Providers>
+        <Toaster position='top-right' />
       </body>
     </html>
   );
