@@ -1,9 +1,12 @@
 'use server';
+import { revalidatePath } from 'next/cache';
+import { v2 as cloudinary } from 'cloudinary';
 import { Gender, Product, Size } from '@prisma/client';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { Color } from '@/interfaces';
-import { revalidatePath } from 'next/cache';
+
+cloudinary.config(process.env.CLOUDINARY_URL ?? '');
 
 const productSchema = z.object({
   id: z.string().uuid().optional().nullable(),
@@ -75,6 +78,21 @@ export const createUpdateProduct = async (formData: FormData) => {
         });
       }
 
+      // Image loading and saving process
+      if (formData.getAll('images')) {
+        const images = await uploadImages(formData.getAll('images') as File[]);
+        if (!images) {
+          throw new Error('Error uploading images');
+        }
+
+        await tx.productImage.createMany({
+          data: images.map(image => ({
+            productId: product.id,
+            url: image,
+          })),
+        });
+      }
+
       return { product };
     });
 
@@ -89,5 +107,36 @@ export const createUpdateProduct = async (formData: FormData) => {
       console.error('[CREATE_UPDATE_PRODUCT_ERROR]', error);
     }
     return { ok: false, message: 'Error creating/updating product' };
+  }
+};
+
+const uploadImages = async (images: File[]) => {
+  try {
+    const uploadImages = images.map(async image => {
+      try {
+        const buffer = await image.arrayBuffer();
+        const base64Image = Buffer.from(buffer).toString('base64');
+        const response = await cloudinary.uploader.upload(
+          `data:image/png;base64,${base64Image}`,
+          {
+            folder: 'teslo-shop',
+          }
+        );
+        return response.secure_url;
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[UPLOAD_IMAGES_ERROR]', error);
+        }
+        return null;
+      }
+    });
+    const uploadedImages = await Promise.all(uploadImages);
+    // Return only valid URLs
+    return uploadedImages.filter((url): url is string => url !== null);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[UPLOAD_IMAGES_ERROR]', error);
+    }
+    return null;
   }
 };

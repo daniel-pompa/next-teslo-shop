@@ -1,15 +1,16 @@
 'use client';
-import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { FaImage, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
 import clsx from 'clsx';
-import { Category, Product, ProductImage } from '@/interfaces';
+import { FaImage, FaTrash } from 'react-icons/fa';
+import { Category, Product, ProductImage as IProductImage } from '@/interfaces';
 import { createUpdateProduct } from '@/actions';
-import { toast } from 'react-hot-toast'; // 🔔 Importación del toast
+import { ProductImage } from '@/components';
+import { useEffect } from 'react';
 
 interface Props {
-  product: Partial<Product> & { ProductImage?: ProductImage[] };
+  product: Partial<Product> & { ProductImage?: IProductImage[] };
   categories: Category[];
 }
 
@@ -24,6 +25,7 @@ interface FormInputs {
   tags: string;
   gender: 'men' | 'women' | 'kid' | 'unisex';
   categoryId: string;
+  images?: FileList;
 }
 
 const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -50,27 +52,41 @@ export const ProductForm = ({ product, categories }: Props) => {
     setValue,
     watch,
     handleSubmit,
+    trigger,
   } = useForm<FormInputs>({
     defaultValues: {
       ...product,
       tags: product.tags?.join(', '),
       sizes: product.sizes ?? [],
       colors: product.colors ?? [],
+      images: undefined,
     },
+    mode: 'onChange',
   });
 
-  watch('sizes');
-  watch('colors');
+  // Watch selected sizes and colors for validation
+  const selectedSizes = watch('sizes');
+  const selectedColors = watch('colors');
+  const watchedImages = watch('images');
+
+  // Check if form is fully valid (all fields and at least one size and one color)
+  const isFormReady = isValid && selectedSizes.length > 0 && selectedColors.length > 0;
+
+  // Revalidate form when sizes or colors change
+  useEffect(() => {
+    trigger();
+  }, [selectedSizes, selectedColors, trigger]);
 
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData();
 
-    const { ...productToSave } = data;
+    const { images, ...productToSave } = data;
 
     if (product.id) {
       formData.append('id', product.id ?? '');
     }
 
+    // Append required fields
     formData.append('title', productToSave.title);
     formData.append('slug', productToSave.slug);
     formData.append('description', productToSave.description);
@@ -82,8 +98,14 @@ export const ProductForm = ({ product, categories }: Props) => {
     formData.append('gender', productToSave.gender);
     formData.append('categoryId', productToSave.categoryId);
 
+    // Append images if they exist (optional)
+    if (images) {
+      for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
+      }
+    }
+
     const savingToast = toast.loading('Saving product...');
-    console.log(savingToast);
 
     try {
       const { ok, product: updatedProduct } = await createUpdateProduct(formData);
@@ -102,24 +124,30 @@ export const ProductForm = ({ product, categories }: Props) => {
     }
   };
 
+  /**
+   * Toggle size selection
+   * Adds or removes the clicked size from the current selection
+   */
   function handleSizeClick(size: string): void {
-    const selectedSizes = new Set(getValues('sizes'));
-    if (selectedSizes.has(size)) {
-      selectedSizes.delete(size);
-    } else {
-      selectedSizes.add(size);
-    }
-    setValue('sizes', Array.from(selectedSizes));
+    const currentSizes = getValues('sizes');
+    const updatedSizes = currentSizes.includes(size)
+      ? currentSizes.filter(s => s !== size)
+      : [...currentSizes, size];
+
+    setValue('sizes', updatedSizes, { shouldValidate: true });
   }
 
+  /**
+   * Toggle color selection
+   * Adds or removes the clicked color from the current selection
+   */
   function handleColorClick(color: string): void {
-    const selectedColors = new Set(getValues('colors'));
-    if (selectedColors.has(color)) {
-      selectedColors.delete(color);
-    } else {
-      selectedColors.add(color);
-    }
-    setValue('colors', Array.from(selectedColors));
+    const currentColors = getValues('colors');
+    const updatedColors = currentColors.includes(color)
+      ? currentColors.filter(c => c !== color)
+      : [...currentColors, color];
+
+    setValue('colors', updatedColors, { shouldValidate: true });
   }
 
   return (
@@ -278,7 +306,7 @@ export const ProductForm = ({ product, categories }: Props) => {
                   className={clsx(
                     'flex items-center justify-center w-10 h-10 rounded-full border transition-all cursor-pointer',
                     {
-                      'bg-blue-600 text-white': getValues('sizes').includes(size),
+                      'bg-blue-600 text-white': selectedSizes.includes(size),
                     }
                   )}
                 >
@@ -300,7 +328,7 @@ export const ProductForm = ({ product, categories }: Props) => {
                     'w-10 h-10 rounded-full border cursor-pointer transition-all',
                     {
                       'ring-2 ring-offset-2 ring-blue-600':
-                        getValues('colors').includes(color),
+                        selectedColors.includes(color),
                     }
                   )}
                   style={{ backgroundColor: color }}
@@ -309,7 +337,7 @@ export const ProductForm = ({ product, categories }: Props) => {
             </div>
           </div>
 
-          {/* Images */}
+          {/* Images (Optional) */}
           <div className='flex flex-col'>
             <label htmlFor='product-images' className='font-medium text-slate-700 mb-2'>
               Images
@@ -317,10 +345,11 @@ export const ProductForm = ({ product, categories }: Props) => {
             <div className='border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors'>
               <input
                 type='file'
+                {...register('images')}
                 multiple
                 className='hidden'
                 id='product-images'
-                accept='image/png, image/jpeg, image/webp'
+                accept='image/png, image/jpeg, image/jpg, image/webp, image/avif'
                 aria-label='Upload product images'
               />
               <label
@@ -334,6 +363,12 @@ export const ProductForm = ({ product, categories }: Props) => {
                 </span>
                 <span className='text-xs text-slate-500'>PNG, JPG up to 5MB</span>
               </label>
+
+              {watchedImages && watchedImages.length > 0 && (
+                <span className='text-sm text-slate-600'>
+                  {watchedImages.length} image(s) selected
+                </span>
+              )}
             </div>
 
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6'>
@@ -342,8 +377,8 @@ export const ProductForm = ({ product, categories }: Props) => {
                   key={image.id}
                   className='bg-white rounded-md overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300'
                 >
-                  <Image
-                    src={`/products/${image.url}`}
+                  <ProductImage
+                    src={image.url}
                     alt={product.title ?? 'Product image'}
                     width={300}
                     height={300}
@@ -365,11 +400,11 @@ export const ProductForm = ({ product, categories }: Props) => {
           <div className={product.ProductImage?.length ? 'pt-4' : 'pt-1'}>
             <button
               type='submit'
-              disabled={!isValid}
+              disabled={!isFormReady}
               className={clsx(
                 'btn-primary flex items-center justify-center gap-2 w-full',
                 {
-                  'opacity-50 cursor-not-allowed': !isValid,
+                  'opacity-50 cursor-not-allowed': !isFormReady,
                 }
               )}
               aria-label='Save product information'
