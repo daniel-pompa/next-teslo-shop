@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import clsx from 'clsx';
 import { FaImage, FaTrash } from 'react-icons/fa';
 import { Category, Product, ProductImage as IProductImage } from '@/interfaces';
-import { createUpdateProduct } from '@/actions';
+import { createUpdateProduct, deleteProductImage } from '@/actions';
 import { ProductImage } from '@/components';
 import { useEffect } from 'react';
 
@@ -386,6 +386,7 @@ export const ProductForm = ({ product, categories }: Props) => {
                   />
                   <button
                     type='button'
+                    onClick={() => deleteProductImage(image.id, image.url)}
                     className='btn-danger w-full text-sm font-medium py-2 flex items-center justify-center gap-2 rounded-t-none rounded-b'
                   >
                     <FaTrash />
