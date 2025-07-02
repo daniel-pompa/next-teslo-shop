@@ -54,7 +54,7 @@ export interface CartProduct {
 }
 
 export interface ProductImage {
-  id: string;
+  id: number;
   url: string;
   productId: string;
 }

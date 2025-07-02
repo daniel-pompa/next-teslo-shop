@@ -5,30 +5,22 @@ import { isColor } from '@/interfaces';
 export const getProductBySlug = async (slug: string) => {
   try {
     const product = await prisma.product.findFirst({
-      where: { slug },
       include: {
         ProductImage: true,
+      },
+      where: {
+        slug: slug,
       },
     });
 
     if (!product) return null;
-
-    // Normalize image IDs (convert to string to avoid type mismatches)
-    const productImages = (product.ProductImage || []).map(image => ({
-      ...image,
-      id: String(image.id),
-    }));
-
-    // Extract valid image URLs (defensive in case of null/undefined)
-    const images = productImages.map(image => image.url).filter(Boolean);
 
     // Filter only valid hex colors
     const validColors = (product.colors || []).filter(isColor);
 
     return {
       ...product,
-      ProductImage: productImages,
-      images,
+      images: product.ProductImage.map(image => image.url),
       colors: validColors,
     };
   } catch (error) {
