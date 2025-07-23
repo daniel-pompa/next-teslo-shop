@@ -237,6 +237,31 @@ npm run dev
 
 Now, you're all set to explore the system!
 
+**Paypal payment integration guide**
+
+> [!IMPORTANT]
+> This project uses **PayPal Sandbox** for testing purposes.  
+> All PayPal transactions are **simulated** and **not real**.
+
+To enable and test PayPal payments locally:
+
+- Create a [PayPal Developer account](https://developer.paypal.com/)
+- Set up **sandbox credentials** (Client ID and Secret)
+- Add them to your `.env` file:
+
+_(you can use the provided `.env.template` file as a reference)_:
+
+```env
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=
+PAYPAL_SECRET_KEY=
+PAYPAL_OAUTH_URL=
+PAYPAL_ORDERS_URL=
+```
+
+**Never use real PayPal credentials in development.**
+
+For production use, switch to Live Mode in your PayPal dashboard and update your environment variables accordingly.
+
 ## Contributing
 
 We welcome contributions from the community! To contribute, follow these steps:
